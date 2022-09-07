@@ -1,11 +1,6 @@
 package com.mjl;
 
-import com.mjl.util.ExcelUtil;
-import com.mjl.util.YhtDTO;
-
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * @author MJL
@@ -13,10 +8,12 @@ import java.util.List;
  */
 public class TT {
     public static void main(String[] args) throws IOException {
-        ExcelUtil util = new ExcelUtil(YhtDTO.class);
-        List<YhtDTO> list = util.importExcel(new File("C:\\Users\\DELL\\Desktop\\副本玉禾田需要删除的角色清单.xlsx"), YhtDTO.class, "", 2);
-        for (YhtDTO yhtDTO : list) {
+        System.out.println(getOneFromZeroOrNull(0));
+        System.out.println(getOneFromZeroOrNull(null));
+        System.out.println(getOneFromZeroOrNull(3));
+    }
 
-        }
+    public static Integer getOneFromZeroOrNull(Integer integer) {
+        return (integer == null || integer.compareTo(0) == 0) ? Integer.valueOf(1) : integer;
     }
 }

@@ -1,5 +1,7 @@
 package com.mjl;
 
+import java.util.Date;
+
 /**
  * @author MJL
  * @date 2021/7/15.
@@ -8,11 +10,19 @@ public class Person {
     private String name;
     private Integer age;
     private String gender;
+    private Date date;
 
     public Person(String name, Integer age, String gender) {
         this.name = name;
         this.age = age;
         this.gender = gender;
+    }
+
+    public Person(String name, Integer age, String gender, Date date) {
+        this.name = name;
+        this.age = age;
+        this.gender = gender;
+        this.date = date;
     }
 
     public Person() {
@@ -49,5 +59,13 @@ public class Person {
                 ", age=" + age +
                 ", gender='" + gender + '\'' +
                 '}';
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 }

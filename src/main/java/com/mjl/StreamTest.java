@@ -1,7 +1,9 @@
 package com.mjl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -13,10 +15,17 @@ public class StreamTest {
     public static void main(String[] args) {
         StreamTest streamTest = new StreamTest();
         var personList = streamTest.getPersonList();
+        personList = personList.stream().filter(p -> p.getAge() != null).collect(Collectors.toList());
+        personList.sort((p1, p2) -> -p1.getAge().compareTo(p2.getAge()));
+        System.out.println(personList);
+        Map<Date, List<Person>> collect = personList.stream().filter(p -> p.getDate() != null).collect(Collectors.groupingBy(Person::getDate));
+        Set<String> collect1 = personList.stream().filter(p -> p.getAge() > 100).map(Person::getName).collect(Collectors.toSet());
+        int sum = personList.stream().filter(p -> p.getAge() != null).mapToInt(Person::getAge).sum();
+        System.out.println(sum);
         // group by
-        Map<Integer, List<Person>> collect = personList.stream().collect(Collectors.groupingBy(Person::getAge));
+//        Map<Integer, List<Person>> collect = personList.stream().collect(Collectors.groupingBy(Person::getAge));
         // map
-        List<Integer> collect1 = personList.stream().map(Person::getAge).collect(Collectors.toList());
+//        List<Integer> collect1 = personList.stream().map(Person::getAge).collect(Collectors.toList());
 //        String collect = deptFeignDTOS.stream().map(d -> d.getDepartmentId()).collect(Collectors.joining(","));
         // filter 过滤
 //        personList.stream().filter(p -> p.getAge() > 30).forEach(System.out::println);
@@ -42,10 +51,10 @@ public class StreamTest {
     }
 
     public List<Person> getPersonList() {
-        return Stream.of(new Person("Tom1", 11, "M"), new Person("Tom2", 21, "M"), new Person("Tom3", 31, "M")
+        return Stream.of(new Person("Tom1", null, "M"), new Person("Tom2", 21, "M"), new Person("Tom3", 31, "M")
                 , new Person("Jack2", 12, "M"), new Person("Jack2", 13, "M"), new Person("Jack1", 14, "M")
                 , new Person("Lucy1", 14, "F"), new Person("Lucy2", 24, "F"), new Person("Lucy3", 44, "F")
-                , new Person("James1", 44, "M"), new Person("James2", 33, "M"), new Person("James3", 22, "M"))
+                , new Person("James1", 44, "M", DateUtil.parse("2022-07-18", DateUtil.DATE_FORMAT)), new Person("James2", 33, "M", DateUtil.parse("2022-07-18", DateUtil.DATE_FORMAT)), new Person("James3", 22, "M", DateUtil.parse("2022-07-19", DateUtil.DATE_FORMAT)))
                 .collect(Collectors.toList());
     }
 }

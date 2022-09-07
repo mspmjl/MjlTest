@@ -1,7 +1,10 @@
 package com.mjl;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author MJL
@@ -11,6 +14,9 @@ public class LocalDateTest {
     public static void main(String[] args) {
 
         System.out.println(LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli());
+        ZoneId zone = ZoneId.systemDefault();
+//        Date changeDate = Date.from(localDate.atStartOfDay().atZone(zone).toInstant());
+
 //        CharSequence text;
 //        DateTimeFormatter formatter;
 //        LocalDate localDate1 = LocalDate.parse("2022-12-24", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -24,6 +30,9 @@ public class LocalDateTest {
 //        LocalDate yesterday = LocalDate.now().plusDays(-1);
 //        System.out.println(yesterday);
 //        System.out.println(yesterday.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        LocalDate yesterdayLocalDate = LocalDate.parse("2022-08-31", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+//        LocalDate localDate = yesterdayLocalDate.withMonth(yesterdayLocalDate.getMonthValue() - 1);
+        System.out.println(yesterdayLocalDate.plusDays(-35));
 //
 //
 //        Date date = new Date();

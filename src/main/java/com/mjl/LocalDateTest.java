@@ -1,9 +1,6 @@
 package com.mjl;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -13,10 +10,26 @@ import java.time.format.DateTimeFormatter;
 public class LocalDateTest {
     public static void main(String[] args) {
 
-        System.out.println(LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli());
-        ZoneId zone = ZoneId.systemDefault();
+        System.out.println(LocalDate.now().getMonthValue());
+        System.out.println(DateUtil.daysBetween(DateUtil.parseDate("2023-01-01"),DateUtil.parseDate("2023-01-10")));
+//        ZoneId zone = ZoneId.systemDefault();
 //        Date changeDate = Date.from(localDate.atStartOfDay().atZone(zone).toInstant());
 
+//        Date start = Date.from(LocalDate.parse("2022-02-29", DateTimeFormatter.ofPattern("yyyy-MM-dd")).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+//        Date end = Date.from(LocalDate.parse("2022-02-29", DateTimeFormatter.ofPattern("yyyy-MM-dd")).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+//        LocalDate start = LocalDate.parse("2023-01-02", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+//        LocalDate end = LocalDate.parse("2023-02-23", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+//        for (long l = start.toEpochDay(); l <= end.toEpochDay(); l++) {
+//            LocalDate localDate = LocalDate.ofEpochDay(l);
+//            System.out.println(localDate);
+//        }
+
+
+        LocalDate start = LocalDate.parse("2023-02" + "-01", DateTimeFormatter.ofPattern(DateUtil.DATE_FORMAT));
+        LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
+        System.out.println(end);
+        System.out.println(end.plusYears(-1));
+        System.out.println(end.plusMonths(-1));
 //        CharSequence text;
 //        DateTimeFormatter formatter;
 //        LocalDate localDate1 = LocalDate.parse("2022-12-24", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -30,34 +43,12 @@ public class LocalDateTest {
 //        LocalDate yesterday = LocalDate.now().plusDays(-1);
 //        System.out.println(yesterday);
 //        System.out.println(yesterday.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        LocalDate yesterdayLocalDate = LocalDate.parse("2022-08-31", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-//        LocalDate localDate = yesterdayLocalDate.withMonth(yesterdayLocalDate.getMonthValue() - 1);
-        System.out.println(yesterdayLocalDate.plusDays(-35));
-//
-//
-//        Date date = new Date();
-//        Calendar calendar = Calendar.getInstance();
-//        calendar.setTime(date);
-//        calendar.set(Calendar.DATE, 23);
-//        long quot = 0;
-//
-//        Date date1 = new Date();
-//
-//        quot = date1.getTime() - calendar.getTime().getTime();
-//        quot = quot / 1000 / 60 / 60 / 24;
-//
-//        System.out.println(Math.abs(quot));
+        LocalDate yesterdayLocalDate = LocalDate.parse("2022-01-02", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        LocalDate localDate = yesterdayLocalDate.withDayOfMonth(yesterdayLocalDate.lengthOfMonth());
+        System.out.println(localDate);
+        LocalDate localDate2 = yesterdayLocalDate.withDayOfMonth(1);
+        System.out.println(localDate2);
+        System.out.println(localDate2.plusDays(-1));
 
-//        List<String> monthList = new ArrayList<>();
-//
-//        LocalDateTime startDate = LocalDateTime.now();
-//        startDate =startDate.withDayOfMonth(1).withMonth(1);
-//        LocalDateTime endDate = LocalDateTime.now();
-//        Assert.isTrue(startDate.getYear() == endDate.getYear(), "不可跨年");
-//        do {
-//            System.out.println(startDate.getMonthValue() + " " + endDate.getMonthValue());
-//            monthList.add(startDate.toString());
-//            startDate = startDate.plusMonths(1);
-//        } while (startDate.getMonthValue() <= endDate.getMonthValue());
     }
 }

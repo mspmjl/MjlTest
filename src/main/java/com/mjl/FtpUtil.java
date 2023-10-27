@@ -34,11 +34,14 @@ public class FtpUtil {
         FTPFile[] ftpFiles = ftpClient.listFiles();
         for (FTPFile ftpFile : ftpFiles) {
             String dirName = ftpFile.getName();
+            if(dirName.contains("crd")||dirName.contains("dkg")||dirName.contains("huzhou")||dirName.contains("yixing")){
+                continue;
+            }
             if (dirName.endsWith("xxl")) {
                 writeLine(dirName, ftpClient, xxlBufferedWriter);
             } else if ("vortex-analysis".equals(dirName) || "vortex-app".equals(dirName) || "vortex-cache".equals(dirName) || "vortex-cas".equals(dirName)
                     || "vortex-eureka".equals(dirName) || "vortex-file".equals(dirName) || "vortex-gateway".equals(dirName) || "vortex-ums-backboot".equals(dirName)
-                    || "vortex-ums-webboot".equals(dirName) || "vortex-xxljob-admin".equals(dirName)) {
+                    || "vortex-ums-webboot".equals(dirName) || "vortex-xxljob-admin".equals(dirName) || "vortex-ums-backboot-yuanqu".equals(dirName) || "vortex-ums-webboot-yuanqu".equals(dirName)) {
                 writeLine(dirName, ftpClient, commonBufferedWriter);
             } else {
                 writeLine(dirName, ftpClient, webBufferedWriter);

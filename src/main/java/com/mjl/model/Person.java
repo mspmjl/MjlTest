@@ -1,6 +1,11 @@
-package com.mjl;
+package com.mjl.model;
+
+import com.mjl.DateUtil;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author MJL
@@ -58,6 +63,7 @@ public class Person {
                 "name='" + name + '\'' +
                 ", age=" + age +
                 ", gender='" + gender + '\'' +
+                ", date=" + date +
                 '}';
     }
 
@@ -67,5 +73,13 @@ public class Person {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public static List<Person> getPersonList() {
+        return Stream.of(new Person("Tom1", 12, "M"), new Person("Tom2", 21, "M"), new Person("Tom3", 31, "M")
+                , new Person("Jack2", 12, "M"), new Person("Jack2", 13, "M"), new Person("Jack1", 14, "M")
+                , new Person("Lucy1", 14, "F"), new Person("Lucy2", 24, "F"), new Person("Lucy3", 44, "F")
+                , new Person("James1", 44, "M", DateUtil.parse("2022-07-18", DateUtil.DATE_FORMAT)), new Person("James2", 33, "M", DateUtil.parse("2022-07-18", DateUtil.DATE_FORMAT)), new Person("James3", 22, "M", DateUtil.parse("2022-07-19", DateUtil.DATE_FORMAT)))
+                .collect(Collectors.toList());
     }
 }

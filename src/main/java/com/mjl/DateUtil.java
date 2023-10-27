@@ -3,6 +3,9 @@ package com.mjl;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -145,5 +148,11 @@ public class DateUtil {
         c.setTime(date);
         c.add(calendarField, amount);
         return c.getTime();
+    }
+
+    public static long daysBetween(Date date,Date date1){
+        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate localDate1 = date1.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        return ChronoUnit.DAYS.between(localDate, localDate1);
     }
 }

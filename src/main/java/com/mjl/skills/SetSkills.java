@@ -12,5 +12,6 @@ public class SetSkills {
         Set<String> set = new HashSet<>();
         set.add("1");
         System.out.println(set.add("1"));
+        System.out.println(set.add("2"));
     }
 }

@@ -1,5 +1,7 @@
 package com.mjl;
 
+import com.mjl.model.Person;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 

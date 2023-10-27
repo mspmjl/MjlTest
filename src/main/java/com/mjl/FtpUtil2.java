@@ -13,13 +13,13 @@ import java.io.IOException;
  * @date 2021/10/8.
  */
 public class FtpUtil2 {
-    private static String path = "/springboot";
+    private static String path = "/envcloud/springboot";
     private static String pathServer = "/mnt/vortex/springboot";
 
     public static void main(String[] args) throws IOException {
-        File txt = new File("C:\\Users\\DELL\\Desktop\\ftp\\FtpWebDownload.sh");
-        File txt2 = new File("C:\\Users\\DELL\\Desktop\\ftp\\FtpXxlDownload.sh");
-        File txt3 = new File("C:\\Users\\DELL\\Desktop\\ftp\\FtpCommonDownload.sh");
+        File txt = new File("C:\\Users\\DELL\\Desktop\\ftp\\FtpWebDownload2.sh");
+        File txt2 = new File("C:\\Users\\DELL\\Desktop\\ftp\\FtpXxlDownload2.sh");
+        File txt3 = new File("C:\\Users\\DELL\\Desktop\\ftp\\FtpCommonDownload2.sh");
         if (!txt.exists()) {
             txt.createNewFile();
         }
@@ -30,8 +30,8 @@ public class FtpUtil2 {
         FileWriter writer3 = new FileWriter(txt3);
         BufferedWriter commonBufferedWriter = new BufferedWriter(writer3);
         FTPClient ftpClient = new FTPClient();
-        ftpClient.connect("222.92.25.98", 121);
-        ftpClient.login("pub", "pub@2021");
+        ftpClient.connect("222.92.212.125", 21);
+        ftpClient.login("vortex", "ftp12#$");
         ftpClient.enterLocalActiveMode();
         ftpClient.changeWorkingDirectory(path);
         FTPFile[] ftpFiles = ftpClient.listFiles();
@@ -41,7 +41,7 @@ public class FtpUtil2 {
                 writeLine(dirName, ftpClient, xxlBufferedWriter);
             } else if ("vortex-analysis".equals(dirName) || "vortex-app".equals(dirName) || "vortex-cache".equals(dirName) || "vortex-cas".equals(dirName)
                     || "vortex-eureka".equals(dirName) || "vortex-file".equals(dirName) || "vortex-gateway".equals(dirName) || "vortex-ums-backboot".equals(dirName)
-                    || "vortex-ums-webboot".equals(dirName) || "vortex-xxljob-admin".equals(dirName)) {
+                    || "vortex-ums-webboot".equals(dirName) || "vortex-xxljob-admin".equals(dirName) || "vortex-ums-backboot-yuanqu".equals(dirName) || "vortex-ums-webboot-yuanqu".equals(dirName)) {
                 writeLine(dirName, ftpClient, commonBufferedWriter);
             } else {
                 writeLine(dirName, ftpClient, webBufferedWriter);
@@ -53,6 +53,7 @@ public class FtpUtil2 {
         ftpClient.disconnect();
     }
 
+    // wget ftp://vortex@222.92.212.125/mjl/hw-cloud-zyry-web-api-2.0.0.jar --ftp-user=vortex --ftp-password=ftp12#$
     private static void writeLine(String dirName, FTPClient ftpClient, BufferedWriter bufferedWriter) throws IOException {
         bufferedWriter.write("#" + " " + dirName);
         bufferedWriter.newLine();
@@ -67,11 +68,11 @@ public class FtpUtil2 {
                 bufferedWriter.newLine();
                 ftpClient.changeWorkingDirectory(path + "/" + dirName + "/config");
                 for (FTPFile config : ftpClient.listFiles()) {
-                    bufferedWriter.write("curl -u pub:pub@2021 ftp://pub@222.92.25.98:121" + path + "/" + dirName + "/config/" + config.getName() + " -O ;");
+                    bufferedWriter.write("wget ftp://vortex@222.92.212.125" + path + "/" + dirName + "/config/" + config.getName() + " --ftp-user=vortex --ftp-password=ftp12#$;");
                     bufferedWriter.newLine();
                 }
             } else {
-                bufferedWriter.write( "curl -u pub:pub@2021 ftp://pub@222.92.25.98:121" + path + "/" + dirName + "/" + file.getName() + " -O ;");
+                bufferedWriter.write( "wget ftp://vortex@222.92.212.125" + path + "/" + dirName + "/" + file.getName() + " --ftp-user=vortex --ftp-password=ftp12#$;");
                 bufferedWriter.newLine();
             }
         }

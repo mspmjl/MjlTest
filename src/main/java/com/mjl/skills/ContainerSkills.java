@@ -1,6 +1,6 @@
 package com.mjl.skills;
 
-import com.mjl.Person;
+import com.mjl.model.Person;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 

@@ -9,10 +9,13 @@ import java.util.*;
 public class MapSkills {
     public static void main(String[] args) {
         Map<String, List<String>> map = new HashMap<>();
-        map.put("1", Arrays.asList("1"));
-        // 返回的是value
-        map.computeIfAbsent("1", key -> new ArrayList<>()).add("2");
+//        map.put("1", Arrays.asList("5"));
+        map.computeIfAbsent("1", key -> new ArrayList<>()).add("3");
+        map.computeIfAbsent("1", key -> new ArrayList<>()).add("4");
         System.out.println(map);
+        String s = "68.86%";
+
+        System.out.println(  s.substring(0, s.length() - 1));
     }
 
 }

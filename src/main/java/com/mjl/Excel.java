@@ -1,14 +1,11 @@
 package com.mjl;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.util.StringUtil;
-import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.util.StringUtils;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -18,7 +15,7 @@ import java.io.IOException;
  */
 public class Excel {
     public static void main(String[] args) throws IOException, InvalidFormatException {
-        XSSFWorkbook xb = new XSSFWorkbook(new File("C:\\Users\\DELL\\Desktop\\北控新环境部署清单-20210909.xlsx"));
+        XSSFWorkbook xb = new XSSFWorkbook();
         XSSFSheet sheetAt = xb.getSheetAt(0);
         XSSFWorkbook excel = new XSSFWorkbook();
         excel.createSheet("mjl");

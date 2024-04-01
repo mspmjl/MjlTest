@@ -11,6 +11,7 @@ public class LocalDateTest {
     public static void main(String[] args) {
 
         System.out.println(LocalDate.now().getMonthValue());
+        System.out.println(LocalDate.now().getYear());
         System.out.println(DateUtil.daysBetween(DateUtil.parseDate("2023-01-01"),DateUtil.parseDate("2023-01-10")));
 //        ZoneId zone = ZoneId.systemDefault();
 //        Date changeDate = Date.from(localDate.atStartOfDay().atZone(zone).toInstant());

@@ -24,39 +24,46 @@ import java.util.List;
 
 public class VortexFileUtil {
     public static void main(String[] args) throws IOException {
-        String modelName = "AlarmManage";
-        String tableName = "alarm_manage";
+//        String chineseName = "处置追踪-来源";
+//        String modelName = "DisposalTrackSource";
+//        String tableName = "disposal_track_source";
+//        List<VortexColumnDTO> columnDTOS = new ArrayList<>();
+//        columnDTOS.add(new VortexColumnDTO("disposalTrackingId", ColumnTypeEnum.String.getKey(), "处置追踪id", null, false));
+//        columnDTOS.add(new VortexColumnDTO("sourceId", ColumnTypeEnum.String.getKey(), "来源编号 枚举:DisposalTrackingSourceEnum", null, false));
+//        columnDTOS.add(new VortexColumnDTO("source", ColumnTypeEnum.String.getKey(), "来源 枚举:DisposalTrackingSourceEnum", null, false));
+//        String modelName = "DisposalTrackCoordination";
+//        String tableName = "disposal_track_coordination";
+//        List<VortexColumnDTO> columnDTOS = new ArrayList<>();
+//        columnDTOS.add(new VortexColumnDTO("disposalTrackingId", ColumnTypeEnum.String.getKey(), "处置追踪id", null, false));
+//        columnDTOS.add(new VortexColumnDTO("coordinationDesc", ColumnTypeEnum.String.getKey(), "协同说明", 500, false));
+//        columnDTOS.add(new VortexColumnDTO("coordinationPhoto", ColumnTypeEnum.String.getKey(), "协同照片", 500, false));
+
+
+//        String modelName = "DisposalTrackCoordinationDept";
+//        String tableName = "disposal_track_coordination_dept";
+//        List<VortexColumnDTO> columnDTOS = new ArrayList<>();
+//        columnDTOS.add(new VortexColumnDTO("disposalTrackingId", ColumnTypeEnum.String.getKey(), "处置追踪id", null, false));
+//        columnDTOS.add(new VortexColumnDTO("disposalTrackingCoordinationId", ColumnTypeEnum.String.getKey(), "处置追踪协同id", null, false));
+//        columnDTOS.add(new VortexColumnDTO("deptId", ColumnTypeEnum.String.getKey(), "部门id", null, false));
+//        columnDTOS.add(new VortexColumnDTO("deptName", ColumnTypeEnum.String.getKey(), "部门名称", null, false));
+//        columnDTOS.add(new VortexColumnDTO("handleDesc", ColumnTypeEnum.String.getKey(), "处置说明", 500, false));
+//        columnDTOS.add(new VortexColumnDTO("handlePhoto", ColumnTypeEnum.String.getKey(), "处置照片", 500, false));
+
+        String chineseName = "渝快政id对照关系";
+        String modelName = "YkzIdBinding";
+        String tableName = "ykz_id_binding";
         List<VortexColumnDTO> columnDTOS = new ArrayList<>();
-        columnDTOS.add(new VortexColumnDTO("reportTime", ColumnTypeEnum.Date.getKey(), "发生时间", null, true));
-        columnDTOS.add(new VortexColumnDTO("sourceCode", ColumnTypeEnum.String.getKey(), "来源编码 枚举:AlarmSourceEnum", null, true));
-        columnDTOS.add(new VortexColumnDTO("source", ColumnTypeEnum.String.getKey(), "来源 枚举:AlarmSourceEnum", null, true));
-        columnDTOS.add(new VortexColumnDTO("divisionId", ColumnTypeEnum.String.getKey(), "行政区划id", null, true));
-        columnDTOS.add(new VortexColumnDTO("divisionCode", ColumnTypeEnum.String.getKey(), "行政区划编号", null, true));
-        columnDTOS.add(new VortexColumnDTO("division", ColumnTypeEnum.String.getKey(), "行政区划", null, true));
-        columnDTOS.add(new VortexColumnDTO("facilityId", ColumnTypeEnum.String.getKey(), "基础设施id", null, true));
-        columnDTOS.add(new VortexColumnDTO("facilityName", ColumnTypeEnum.String.getKey(), "基础设施", null, true));
-        columnDTOS.add(new VortexColumnDTO("position", ColumnTypeEnum.String.getKey(), "位置", 500, true));
-        columnDTOS.add(new VortexColumnDTO("threshold", ColumnTypeEnum.BigDecimal.getKey(), "点位内涝阈值", null, true));
-        columnDTOS.add(new VortexColumnDTO("deptId", ColumnTypeEnum.String.getKey(), "责任部门id", null, true));
-        columnDTOS.add(new VortexColumnDTO("deptIdName", ColumnTypeEnum.String.getKey(), "责任部门id", null, true));
-        columnDTOS.add(new VortexColumnDTO("emergencyDegreeCode", ColumnTypeEnum.String.getKey(), "紧急程度编码 枚举:AlarmEmergencyDegreeEnum", null, true));
-        columnDTOS.add(new VortexColumnDTO("emergencyDegree", ColumnTypeEnum.String.getKey(), "紧急程度 枚举:AlarmEmergencyDegreeEnum", null, true));
-        columnDTOS.add(new VortexColumnDTO("alarmLevelCode", ColumnTypeEnum.String.getKey(), "预警级别编码 枚举:AlarmLevelEnum", null, true));
-        columnDTOS.add(new VortexColumnDTO("alarmLevel", ColumnTypeEnum.String.getKey(), "预警级别 枚举:AlarmLevelEnum", null, true));
-        columnDTOS.add(new VortexColumnDTO("content", ColumnTypeEnum.String.getKey(), "预警描述", 500, true));
-        columnDTOS.add(new VortexColumnDTO("release", ColumnTypeEnum.Boolean.getKey(), "发布状态", null, false));
-        columnDTOS.add(new VortexColumnDTO("cancelTime", ColumnTypeEnum.Date.getKey(), "解除时间", null, false));
-        columnDTOS.add(new VortexColumnDTO("duration", ColumnTypeEnum.BigDecimal.getKey(), "持续时间", null, false));
+        columnDTOS.add(new VortexColumnDTO("ykzId", ColumnTypeEnum.String.getKey(), "渝快政id", null, false));
+        columnDTOS.add(new VortexColumnDTO("umsId", ColumnTypeEnum.String.getKey(), "umsId", null, false));
 
-
-        writeModel(modelName, tableName, columnDTOS);
+        writeModel(modelName, tableName, columnDTOS, chineseName);
         writeDTO(modelName, columnDTOS);
         writeVO(modelName, columnDTOS);
         writeMapper(modelName);
         writeService(modelName);
         writeServiceImpl(modelName);
         writeCriteria(modelName);
-        writeController(modelName);
+        writeController(modelName, chineseName);
     }
 
     private static void writeColumnInfo(VortexColumnDTO dto, BufferedWriter bufferedWriter, boolean writeDb, boolean valid) throws IOException {
@@ -102,7 +109,9 @@ public class VortexFileUtil {
         bufferedWriter.newLine();
     }
 
-    public static void writeController(String modelName) throws IOException {
+    public static void writeController(String modelName, String chineseName) throws IOException {
+
+
         File txt = new File("C:\\Users\\DELL\\Desktop\\vortexdto\\" + modelName + "Controller.java");
         FileWriter writer = new FileWriter(txt);
         BufferedWriter bufferedWriter = new BufferedWriter(writer);
@@ -112,10 +121,16 @@ public class VortexFileUtil {
         bufferedWriter.newLine();
         bufferedWriter.write("import org.springframework.web.bind.annotation.*;");
         bufferedWriter.newLine();
-        bufferedWriter.write("@Tag(name = \"xxx\")\n" +
+
+        char firstChar = modelName.charAt(0);
+        char updatedFirstChar = Character.toLowerCase(firstChar);
+        String remainder = modelName.substring(1);
+        String tag = updatedFirstChar + remainder;
+
+        bufferedWriter.write("@Tag(name = \"" + chineseName + "\")\n" +
                 "@RestController\n" +
-                "@RequestMapping(\"api/xxx\")\n" +
-                "public class " + modelName + "Controller {\n" +
+                "@RequestMapping(\"api/" + tag + "\")\n" +
+                "public class " + modelName + "Controller extends ActionTicketBaseController{\n" +
                 "    @Autowired\n" +
                 "    private I" + modelName + "Service service;\n" +
                 "\n" +
@@ -186,7 +201,7 @@ public class VortexFileUtil {
         bufferedWriter.flush();
     }
 
-    public static void writeModel(String modelName, String tableName, List<VortexColumnDTO> columnDTOS) throws IOException {
+    public static void writeModel(String modelName, String tableName, List<VortexColumnDTO> columnDTOS, String chineseName) throws IOException {
         File txt = new File("C:\\Users\\DELL\\Desktop\\vortexdto\\" + modelName + ".java");
         FileWriter writer = new FileWriter(txt);
         BufferedWriter bufferedWriter = new BufferedWriter(writer);
@@ -210,7 +225,7 @@ public class VortexFileUtil {
         bufferedWriter.newLine();
         bufferedWriter.write("@Entity(name = " + modelName + ".TABLE_NAME)");
         bufferedWriter.newLine();
-        bufferedWriter.write("@Table(appliesTo = " + modelName + ".TABLE_NAME, comment = \"xxx\")");
+        bufferedWriter.write("@Table(appliesTo = " + modelName + ".TABLE_NAME, comment = \"" + chineseName + "\")");
         bufferedWriter.newLine();
         bufferedWriter.write("@TableName(value = " + modelName + ".TABLE_NAME)");
         bufferedWriter.newLine();
@@ -244,8 +259,8 @@ public class VortexFileUtil {
         File txt = new File("C:\\Users\\DELL\\Desktop\\vortexdto\\" + modelName + "DTO.java");
         FileWriter writer = new FileWriter(txt);
         BufferedWriter bufferedWriter = new BufferedWriter(writer);
-        bufferedWriter.write("@import javax.validation.constraints.NotBlank;\n" +
-                "@import javax.validation.constraints.NotNull;");
+        bufferedWriter.write("import javax.validation.constraints.NotBlank;\n" +
+                "import javax.validation.constraints.NotNull;");
         bufferedWriter.newLine();
         bufferedWriter.write("@Data");
         bufferedWriter.newLine();

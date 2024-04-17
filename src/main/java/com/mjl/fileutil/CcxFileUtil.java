@@ -11,8 +11,8 @@ import java.io.IOException;
  */
 public class CcxFileUtil {
     public static void main(String[] args) throws IOException {
-        String modalName = "CoreBjPartyPostReport";
-        String tableName = "zyry_core_bj_party_post_report";
+        String modalName = "AttendanceResultAdjustHistory";
+        String tableName = "zyry_attendance_result_adjust_history";
         boolean splitTable = false;
         boolean longId = true;
         writeModal(splitTable, longId, modalName, tableName);

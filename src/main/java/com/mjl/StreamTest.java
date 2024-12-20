@@ -4,6 +4,8 @@ import com.mjl.model.Person;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @author MJL
@@ -13,6 +15,17 @@ public class StreamTest {
     public static void main(String[] args) {
         StreamTest streamTest = new StreamTest();
         var personList = Person.getPersonList();
+        List<Person> nullTest = new ArrayList<>();
+        long count = nullTest.stream().filter(a -> a.getAge() > 10).count();
+        System.out.println(count);
+
+
+        Person person = null;
+        int sum = Optional.ofNullable(person).map(Person::getAge).stream().mapToInt(Integer::intValue).sum();
+        System.out.println(sum);
+        Integer integer = Optional.ofNullable(person).map(Person::getAge).get();
+        System.out.println(integer);
+
 //        personList = personList.stream().filter(p -> p.getAge() != null).collect(Collectors.toList());
 //        personList.sort((p1, p2) -> -p1.getAge().compareTo(p2.getAge()));
 //        System.out.println(personList);

@@ -23,8 +23,8 @@ public class RestTemplateDemo {
         RestTemplateDemo demo = new RestTemplateDemo();
 //        demo.SzAddDevice("RL-IN-M", "ALXTT49")
 //        demo.SzAddDeviceLog("ALXTT48RL-IN-M");
-//        demo.SzAddDeviceAlarm("ALXTT48LHQND-M");
-        demo.getToken();
+        demo.SzAddDeviceAlarm("ALXTT48LHQND-M");
+//        demo.getToken();
     }
 
     public void getToken() {

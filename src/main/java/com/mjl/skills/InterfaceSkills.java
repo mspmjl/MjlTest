@@ -13,6 +13,11 @@ public class InterfaceSkills {
     String method(ForExecute forExecute,String s){
         return forExecute.execute(s);
     }
+
+
+    public static String test(ForExecute forExecute,String s){
+        return forExecute.execute(s);
+    }
 }
 
 interface ForExecute{

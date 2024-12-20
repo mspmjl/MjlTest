@@ -24,37 +24,14 @@ import java.util.List;
 
 public class VortexFileUtil {
     public static void main(String[] args) throws IOException {
-//        String chineseName = "处置追踪-来源";
-//        String modelName = "DisposalTrackSource";
-//        String tableName = "disposal_track_source";
-//        List<VortexColumnDTO> columnDTOS = new ArrayList<>();
-//        columnDTOS.add(new VortexColumnDTO("disposalTrackingId", ColumnTypeEnum.String.getKey(), "处置追踪id", null, false));
-//        columnDTOS.add(new VortexColumnDTO("sourceId", ColumnTypeEnum.String.getKey(), "来源编号 枚举:DisposalTrackingSourceEnum", null, false));
-//        columnDTOS.add(new VortexColumnDTO("source", ColumnTypeEnum.String.getKey(), "来源 枚举:DisposalTrackingSourceEnum", null, false));
-//        String modelName = "DisposalTrackCoordination";
-//        String tableName = "disposal_track_coordination";
-//        List<VortexColumnDTO> columnDTOS = new ArrayList<>();
-//        columnDTOS.add(new VortexColumnDTO("disposalTrackingId", ColumnTypeEnum.String.getKey(), "处置追踪id", null, false));
-//        columnDTOS.add(new VortexColumnDTO("coordinationDesc", ColumnTypeEnum.String.getKey(), "协同说明", 500, false));
-//        columnDTOS.add(new VortexColumnDTO("coordinationPhoto", ColumnTypeEnum.String.getKey(), "协同照片", 500, false));
 
-
-//        String modelName = "DisposalTrackCoordinationDept";
-//        String tableName = "disposal_track_coordination_dept";
-//        List<VortexColumnDTO> columnDTOS = new ArrayList<>();
-//        columnDTOS.add(new VortexColumnDTO("disposalTrackingId", ColumnTypeEnum.String.getKey(), "处置追踪id", null, false));
-//        columnDTOS.add(new VortexColumnDTO("disposalTrackingCoordinationId", ColumnTypeEnum.String.getKey(), "处置追踪协同id", null, false));
-//        columnDTOS.add(new VortexColumnDTO("deptId", ColumnTypeEnum.String.getKey(), "部门id", null, false));
-//        columnDTOS.add(new VortexColumnDTO("deptName", ColumnTypeEnum.String.getKey(), "部门名称", null, false));
-//        columnDTOS.add(new VortexColumnDTO("handleDesc", ColumnTypeEnum.String.getKey(), "处置说明", 500, false));
-//        columnDTOS.add(new VortexColumnDTO("handlePhoto", ColumnTypeEnum.String.getKey(), "处置照片", 500, false));
-
-        String chineseName = "渝快政id对照关系";
-        String modelName = "YkzIdBinding";
-        String tableName = "ykz_id_binding";
+        String chineseName = "检测类型配置";
+        String modelName = "DetectionTypeConfig";
+        String tableName = "Constants.TABLE_PREFIX_ZHSW + " + "\"detection_type_config";
         List<VortexColumnDTO> columnDTOS = new ArrayList<>();
-        columnDTOS.add(new VortexColumnDTO("ykzId", ColumnTypeEnum.String.getKey(), "渝快政id", null, false));
-        columnDTOS.add(new VortexColumnDTO("umsId", ColumnTypeEnum.String.getKey(), "umsId", null, false));
+        columnDTOS.add(new VortexColumnDTO("typeCode", ColumnTypeEnum.String.getKey(), "基础设施类型", null, false));
+        columnDTOS.add(new VortexColumnDTO("typeName", ColumnTypeEnum.String.getKey(), "名称", null, false));
+        columnDTOS.add(new VortexColumnDTO("checked", ColumnTypeEnum.Boolean.getKey(), "是否勾选", null, false));
 
         writeModel(modelName, tableName, columnDTOS, chineseName);
         writeDTO(modelName, columnDTOS);
@@ -115,6 +92,10 @@ public class VortexFileUtil {
         File txt = new File("C:\\Users\\DELL\\Desktop\\vortexdto\\" + modelName + "Controller.java");
         FileWriter writer = new FileWriter(txt);
         BufferedWriter bufferedWriter = new BufferedWriter(writer);
+        bufferedWriter.write("import java.util.List;");
+        bufferedWriter.newLine();
+        bufferedWriter.write("import org.springframework.beans.BeanUtils;");
+        bufferedWriter.newLine();
         bufferedWriter.write("import io.swagger.v3.oas.annotations.tags.Tag;");
         bufferedWriter.newLine();
         bufferedWriter.write("import io.swagger.v3.oas.annotations.Parameter;");
@@ -152,7 +133,7 @@ public class VortexFileUtil {
                 "                                                        @RequestBody " + modelName + "SearchDTO queryDto) {\n" +
                 "        queryDto.setTenantId(tenantId);\n" +
                 "        queryDto.setUserId(userId);\n" +
-                "        return RestResultDTO.newSuccess(service.list(queryDto));\n" +
+                "        return RestResultDTO.newSuccess(service.listDto(queryDto));\n" +
                 "    }\n" +
                 "\n" +
                 "\n" +
@@ -187,15 +168,25 @@ public class VortexFileUtil {
                 "        return RestResultDTO.newSuccess();\n" +
                 "    }\n" +
                 "\n" +
-                "    @Operation(summary = \"根据id查询\")\n" +
+
+                "       @Operation(summary = \"根据id查询\")\n" +
                 "    @RequestMapping(value = \"/getById\", method = {RequestMethod.GET, RequestMethod.POST})\n" +
                 "    public RestResultDto<" + modelName + "VO> getById(@Parameter(description = \"租户ID\") @RequestHeader String tenantId,\n" +
-                "                                                     @Parameter(description = \"用户ID\") @RequestHeader(required = false) String userId,\n" +
-                "                                                     @RequestBody " + modelName + "SearchDTO queryDto) {\n" +
-                "        Assert.hasText(queryDto.getId(), \"id不能为空\");\n" +
-                "        List<" + modelName + "VO> list = service.list(queryDto);\n" +
-                "        Assert.notNull(list, \"未找到记录\");\n" +
-                "        return RestResultDto.newSuccess(list.get(0), Constants.MSG_SUCCESS_ZH);\n" +
+                "                                                    @Parameter(description = \"用户ID\") @RequestHeader(required = false) String userId,\n" +
+                "                                                    @ModelAttribute String id) {\n" +
+                "    }\n" +
+                "     Assert.hasText(id, \"id不能为空\");\n" +
+                "        return RestResultDto.newSuccess(service.getById(id));\n" +
+                " @Operation(summary = \"导出\")\n" +
+                "    @RequestMapping(value = \"export\", method = {RequestMethod.GET, RequestMethod.POST})\n" +
+                "    public void dayExport(@Parameter(description = \"租户ID\") @RequestHeader String tenantId,\n" +
+                "                          @Parameter(description = \"用户ID\") @RequestHeader String userId,\n" +
+                "                          @RequestBody " + modelName + "SearchDTO queryDto,\n" +
+                "                          HttpServletResponse response) {\n" +
+                "        queryDto.setTenantId(tenantId);\n" +
+                "        queryDto.setUserId(userId);\n" +
+                "        List<" + modelName + "VO> list = service.listDto(queryDto);\n" +
+                "        ExcelUtils.exportExcel(queryDto.getFileName(), queryDto.getExtension(), null, queryDto.getColumnJson(), list, response);\n" +
                 "    }\n" +
                 "}");
         bufferedWriter.flush();
@@ -231,7 +222,7 @@ public class VortexFileUtil {
         bufferedWriter.newLine();
         bufferedWriter.write("public class  " + modelName + "  extends AbstractBaseDeleteModel {");
         bufferedWriter.newLine();
-        bufferedWriter.write(" public static final String TABLE_NAME = Constants.TABLE_PREFIX + \"" + tableName + "\";");
+        bufferedWriter.write(" public static final String TABLE_NAME =" + tableName + "\";");
         bufferedWriter.newLine();
         for (VortexColumnDTO columnDTO : columnDTOS) {
             writeColumnInfo(columnDTO, bufferedWriter, true, false);
@@ -244,6 +235,9 @@ public class VortexFileUtil {
         File txt = new File("C:\\Users\\DELL\\Desktop\\vortexdto\\" + modelName + "VO.java");
         FileWriter writer = new FileWriter(txt);
         BufferedWriter bufferedWriter = new BufferedWriter(writer);
+
+        bufferedWriter.write("import com.vortex.cloud.vfs.lite.base.dto.AbstractBaseTenantDTO;");
+        bufferedWriter.newLine();
         bufferedWriter.write("@Data");
         bufferedWriter.newLine();
         bufferedWriter.write("public class  " + modelName + "VO  extends AbstractBaseTenantDTO {");
@@ -260,7 +254,7 @@ public class VortexFileUtil {
         FileWriter writer = new FileWriter(txt);
         BufferedWriter bufferedWriter = new BufferedWriter(writer);
         bufferedWriter.write("import javax.validation.constraints.NotBlank;\n" +
-                "import javax.validation.constraints.NotNull;");
+                "import javax.validation.constraints.NotNull;\n" + "import com.vortex.cloud.vfs.lite.base.dto.AbstractBaseTenantDTO;");
         bufferedWriter.newLine();
         bufferedWriter.write("@Data");
         bufferedWriter.newLine();
@@ -288,19 +282,32 @@ public class VortexFileUtil {
         FileWriter writer = new FileWriter(txt);
         BufferedWriter bufferedWriter = new BufferedWriter(writer);
 
-        bufferedWriter.write("public interface  I" + modelName + "Service  {");
+        bufferedWriter.write("import java.util.List;");
         bufferedWriter.newLine();
-        bufferedWriter.write("    /**\n" +
-                "     * @param searchDTO\n" +
+        bufferedWriter.write("import org.springframework.beans.BeanUtils;");
+        bufferedWriter.newLine();
+        bufferedWriter.write("import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;");
+        bufferedWriter.newLine();
+        bufferedWriter.newLine();
+        bufferedWriter.write("public interface  I" + modelName + "Service  extends IService<" + modelName + "> {\n" +
+                "    /**\n" +
+                "     * @param queryDto\n" +
                 "     * @return\n" +
                 "     */\n" +
-                "    DataStoreDTO<" + modelName + "VO> page(" + modelName + "SearchDTO " + "searchDTO);\n" +
+                "    LambdaQueryChainWrapper<" + modelName + "> buildQuery(" + modelName + "SearchDTO queryDto);\n" +
                 "\n" +
                 "    /**\n" +
                 "     * @param searchDTO\n" +
                 "     * @return\n" +
                 "     */\n" +
-                "    List<" + modelName + "VO> list(" + modelName + "SearchDTO " + "searchDTO);\n" +
+                "    DataStoreDTO<" + modelName + "VO> page(" + modelName + "SearchDTO searchDTO);\n" +
+                "\n" +
+                "    /**\n" +
+                "     * @param searchDTO\n" +
+                "     * @return\n" +
+                "     */\n" +
+                "    List<" + modelName + "VO> listDto(" + modelName + "SearchDTO searchDTO);\n" +
+                "\n" +
                 "\n" +
                 "    /**\n" +
                 "     * @param dto\n" +
@@ -315,9 +322,15 @@ public class VortexFileUtil {
                 "    /**\n" +
                 "     * @param idList\n" +
                 "     */\n" +
-                "    void delete(List<String> idList);");
-        bufferedWriter.newLine();
-        bufferedWriter.write("}");
+                "    void delete(List<String> idList);\n" +
+                "    /**\n" +
+                "     * getById\n" +
+                "     *\n" +
+                "     * @param id\n" +
+                "     * @return\n" +
+                "     */\n" +
+                "    " + modelName + "VO getById(String id);\n" +
+                "}");
         bufferedWriter.flush();
     }
 
@@ -326,6 +339,12 @@ public class VortexFileUtil {
         FileWriter writer = new FileWriter(txt);
         BufferedWriter bufferedWriter = new BufferedWriter(writer);
         bufferedWriter.write("import org.springframework.transaction.annotation.Transactional;");
+        bufferedWriter.newLine();
+        bufferedWriter.write("import java.util.List;");
+        bufferedWriter.newLine();
+        bufferedWriter.write("import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;");
+        bufferedWriter.newLine();
+        bufferedWriter.write("import org.springframework.beans.BeanUtils;");
         bufferedWriter.newLine();
         bufferedWriter.write("import com.google.common.collect.Lists;");
         bufferedWriter.newLine();
@@ -337,93 +356,111 @@ public class VortexFileUtil {
         bufferedWriter.newLine();
         bufferedWriter.write("@Transactional(rollbackFor = Exception.class)");
         bufferedWriter.newLine();
-        bufferedWriter.write("public class  " + modelName + "ServiceImpl    implements I" + modelName + "Service {");
+        bufferedWriter.write(
+                "public class " + modelName + "ServiceImpl extends ServiceImpl<" + modelName + "Mapper, " + modelName + "> implements I" + modelName + "Service {\n" +
+                        "    @Override\n" +
+                        "    public LambdaQueryChainWrapper<" + modelName + "> buildQuery(" + modelName + "SearchDTO queryDto) {\n" +
+                        "        LambdaQueryChainWrapper<" + modelName + "> queryWrapper = lambdaQuery();\n" +
+                        "        if (StringUtils.isNotBlank(queryDto.getTenantId())) {\n" +
+                        "            queryWrapper.eq(" + modelName + "::getTenantId, queryDto.getTenantId());\n" +
+                        "        }\n" +
+                        "        if (CollectionUtils.isNotEmpty(queryDto.getIdList())) {\n" +
+                        "            queryWrapper.in(" + modelName + "::getId, queryDto.getIdList());\n" +
+                        "        }\n" +
+                        "        if (StringUtils.isNotBlank(queryDto.getId())) {\n" +
+                        "            queryWrapper.eq(" + modelName + "::getId, queryDto.getId());\n" +
+                        "        }\n" +
+                        "        if (StringUtils.isNotBlank(queryDto.getIdNe())) {\n" +
+                        "            queryWrapper.ne(" + modelName + "::getId, queryDto.getIdNe());\n" +
+                        "        }\n" +
+                        "        return queryWrapper;\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    private " + modelName + " transEntity(" + modelName + "DTO dto) {\n" +
+                        "        " + modelName + " entity = new " + modelName + "();\n" +
+                        "        BeanUtils.copyProperties(dto, entity);\n" +
+                        "        return entity;\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    private List<" + modelName + "VO> transVos(List<" + modelName + "> records) {\n" +
+                        "        List<" + modelName + "VO> list = Lists.newArrayList();\n" +
+                        "        if (CollectionUtils.isNotEmpty(records)) {\n" +
+                        "            for (" + modelName + " record : records) {\n" +
+                        "                list.add(transVo(record));\n" +
+                        "            }\n" +
+                        "        }\n" +
+                        "        return list;\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    private " + modelName + "VO transVo(" + modelName + " record) {\n" +
+                        "        " + modelName + "VO vo = new " + modelName + "VO();\n" +
+                        "        BeanUtils.copyProperties(record, vo);\n" +
+                        "        return vo;\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    @Override\n" +
+                        "    public DataStoreDTO<" + modelName + "VO> page(" + modelName + "SearchDTO searchDTO) {\n" +
+                        "        LambdaQueryChainWrapper<" + modelName + "> queryWrapper = buildQuery(searchDTO);\n" +
+                        "        Pageable pageable = PageUtil.getPageable(searchDTO);\n" +
+                        "        Page<" + modelName + "> page = PageUtils.transferPage(pageable);\n" +
+                        "        Page<" + modelName + "> pageContent = queryWrapper.page(page);\n" +
+                        "        return new DataStoreDTO<>(pageContent.getTotal(), transVos(pageContent.getRecords()));\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    @Override\n" +
+                        "    public List<" + modelName + "VO> listDto(" + modelName + "SearchDTO searchDTO) {\n" +
+                        "        LambdaQueryChainWrapper<" + modelName + "> queryWrapper = buildQuery(searchDTO);\n" +
+                        "        Sort sort = PageUtil.getSort(searchDTO);\n" +
+                        "        if (!sort.isUnsorted()) {\n" +
+                        "            Iterator var8 = sort.iterator();\n" +
+                        "            while (var8.hasNext()) {\n" +
+                        "                Sort.Order order = (Sort.Order) var8.next();\n" +
+                        "                String property = order.getProperty();\n" +
+                        "                boolean ascending = order.isAscending();\n" +
+                        "                queryWrapper.orderBy(true, ascending, ToSFunctionUtil.getSFunction(" + modelName + ".class, property));\n" +
+                        "            }\n" +
+                        "        }\n" +
+                        "        List<" + modelName + "> list = queryWrapper.list();\n" +
+                        "\n" +
+                        "        return transVos(list);\n" +
+                        "    }\n" +
+                        "\n" +
+                        "\n" +
+                        "    @Override\n" +
+                        "    public void insert(" + modelName + "DTO dto) {\n" +
+                        "        " + modelName + " model = transEntity(dto);\n" +
+                        "        super.save(model);\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    @Override\n" +
+                        "    public void update(" + modelName + "DTO dto) {\n" +
+                        "        String id = dto.getId();\n" +
+                        "        Assert.hasText(id, \"id不能为空\");\n" +
+                        "        " + modelName + "Mapper mapper = getBaseMapper();\n" +
+                        "        " + modelName + " modelInDb = mapper.selectById(id);\n" +
+                        "        Assert.notNull(modelInDb, \"根据id未找到数据\");\n" +
+                        "        " + modelName + " model = transEntity(dto);\n" +
+                        "        model.setId(id);\n" +
+                        "        super.updateById(model);\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    @Override\n" +
+                        "    public void delete(List<String> idList) {\n" +
+                        "        if (CollectionUtils.isNotEmpty(idList)) {\n" +
+                        "            super.removeByIds(idList);\n" +
+                        "        }\n" +
+                        "\n" +
+                        "    }\n" +
+                        "    @Override\n" +
+                        "    public " + modelName + "VO getById(String id) {\n" +
+                        "        " + modelName + "SearchDTO searchDTO = new " + modelName + "SearchDTO();\n" +
+                        "        searchDTO.setId(id);\n" +
+                        "        List<" + modelName + "VO> " + modelName + "VOS = listDto(searchDTO);\n" +
+                        "        Assert.notEmpty(" + modelName + "VOS, \"根据id未找到数据\");\n" +
+                        "        return " + modelName + "VOS.get(0);\n" +
+                        "    }\n");
         bufferedWriter.newLine();
 
-        bufferedWriter.write("@Resource");
-        bufferedWriter.newLine();
-        bufferedWriter.write("private " + modelName + "Mapper mapper;");
-        bufferedWriter.newLine();
-
-        bufferedWriter.write("    private QueryWrapper<" + modelName + "> buildQuery(" + modelName + "SearchDTO queryDto) {\n" +
-                "        QueryWrapper<" + modelName + "> queryWrapper = new QueryWrapper<>();\n" +
-                "        if (StringUtils.isNotBlank(queryDto.getTenantId())) {\n" +
-                "            queryWrapper.lambda().eq(" + modelName + "::getTenantId, queryDto.getTenantId());\n" +
-                "        }\n" +
-                "        if (CollectionUtils.isNotEmpty(queryDto.getIdList())) {\n" +
-                "            queryWrapper.lambda().in(" + modelName + "::getId, queryDto.getIdList());\n" +
-                "        }\n" +
-                "        if (StringUtils.isNotBlank(queryDto.getId())) {\n" +
-                "            queryWrapper.lambda().eq(" + modelName + "::getId, queryDto.getId());\n" +
-                "        }\n" +
-                "        if (StringUtils.isNotBlank(queryDto.getIdNe())) {\n" +
-                "            queryWrapper.lambda().ne(" + modelName + "::getId, queryDto.getIdNe());\n" +
-                "        }\n" +
-                "        return queryWrapper;\n" +
-                "    }");
-        bufferedWriter.newLine();
-        bufferedWriter.write("    private " + modelName + " transEntity(" + modelName + "DTO dto) {\n" +
-                "        " + modelName + " entity = new " + modelName + "();\n" +
-                "        BeanUtils.copyProperties(dto, entity);\n" +
-                "        return entity;\n" +
-                "    }\n" +
-                "\n" +
-                "    private List<" + modelName + "VO> transVos(List<" + modelName + "> records) {\n" +
-                "        List<" + modelName + "VO> list = Lists.newArrayList();\n" +
-                "        if (CollectionUtils.isNotEmpty(records)) {\n" +
-                "            for (" + modelName + " record : records) {\n" +
-                "                list.add(transVo(record));\n" +
-                "            }\n" +
-                "        }\n" +
-                "        return list;\n" +
-                "    }\n" +
-                "\n" +
-                "    private " + modelName + "VO transVo(" + modelName + " record) {\n" +
-                "        " + modelName + "VO vo = new " + modelName + "VO();\n" +
-                "        BeanUtils.copyProperties(record, vo);\n" +
-                "        return vo;\n" +
-                "    }");
-        bufferedWriter.newLine();
-        bufferedWriter.write("    @Override\n" +
-                "    public DataStoreDTO<" + modelName + "VO> page(" + modelName + "SearchDTO searchDTO) {\n" +
-                "        QueryWrapper<" + modelName + "> queryWrapper = buildQuery(searchDTO);\n" +
-                "        Pageable pageable = PageUtil.getPageable(searchDTO);\n" +
-                "        Page<" + modelName + "> page = PageUtils.transferPage(pageable);\n" +
-                "        Page<" + modelName + "> pageContent = mapper.selectPage(page, queryWrapper);\n" +
-                "        return new DataStoreDTO<>(pageContent.getTotal(), transVos(pageContent.getRecords()));\n" +
-                "    }\n" +
-                "\n" +
-                "    @Override\n" +
-                "    public List<" + modelName + "VO> list(" + modelName + "SearchDTO searchDTO) {\n" +
-                "        QueryWrapper<" + modelName + "> queryWrapper = buildQuery(searchDTO);\n" +
-                "        Sort sort = PageUtil.getSort(searchDTO);\n" +
-                "        PageUtils.transferSort(queryWrapper, sort);\n" +
-                "        return transVos(mapper.selectList(queryWrapper));\n" +
-                "    }\n" +
-                "\n" +
-                "    @Override\n" +
-                "    public void insert(" + modelName + "DTO dto) {\n" +
-                "        " + modelName + " model = transEntity(dto);\n" +
-                "        mapper.insert(model);\n" +
-                "    }\n" +
-                "\n" +
-                "    @Override\n" +
-                "    public void update(" + modelName + "DTO dto) {\n" +
-                "        String id = dto.getId();\n" +
-                "        Assert.hasText(id, \"id不能为空\");\n" +
-                "        " + modelName + " modelInDb = mapper.selectById(id);\n" +
-                "        Assert.notNull(modelInDb, \"根据id未找到数据\");\n" +
-                "        " + modelName + " model = transEntity(dto);\n" +
-                "        model.setId(id);\n" +
-                "        mapper.updateById(model);\n" +
-                "    }\n" +
-                "\n" +
-                "    @Override\n" +
-                "    public void delete(List<String> idList) {\n" +
-                "        if (CollectionUtils.isNotEmpty(idList)) {\n" +
-                "            mapper.deleteBatchIds(idList);\n" +
-                "        }\n" +
-                "    }");
 
         bufferedWriter.newLine();
         bufferedWriter.write("}");

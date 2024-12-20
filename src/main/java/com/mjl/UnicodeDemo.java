@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @date 2021/12/8.
  */
 @Transactional(rollbackFor = Exception.class)
-public class TT {
+public class UnicodeDemo {
     public static void main(String[] args) throws Exception {
         String s = "{" +
                 "  \"id\": \"1650849013258579458\"," +
@@ -2512,6 +2512,7 @@ public class TT {
         for (String s1 : split) {
             result += ":";
             if (s1.startsWith("\"u")) {
+                // TODO: 2024/12/11 这里还要用,分隔，只有第一个替换
                 String replace = s1.replaceAll("u", "mjlu");
                 result += replace;
 

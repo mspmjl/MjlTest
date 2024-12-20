@@ -20,8 +20,8 @@ import java.nio.file.Paths;
 
 public class UploadOffline {
     private static final String EndPoint = "lke.tencentcloudapi.com";
-    private static final String SecretID = "AKIDoUI2e6KLAmASdcR3oRs55rVxBDKI2Zs0";
-    private static final String SecretKey = "yCB0c0GKQRHuJajjcREtPksnV1LTUUSL";
+    private static final String SecretID = "xxx";
+    private static final String SecretKey = "xxx";
     private static final String BotBizID = "1846139144400535552";
     private static final String TypeKeyOffline = "offline"; // 离线文档上传类型
     private static final String Region = "ap-guangzhou";

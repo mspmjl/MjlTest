@@ -25,13 +25,10 @@ import java.util.List;
 public class VortexFileUtil {
     public static void main(String[] args) throws IOException {
 
-        String chineseName = "检测类型配置";
-        String modelName = "DetectionTypeConfig";
-        String tableName = "Constants.TABLE_PREFIX_ZHSW + " + "\"detection_type_config";
+        String chineseName = "相交管线检查-管点";
+        String modelName = "CrossPoint";
+        String tableName = "Constants.TABLE_PREFIX + " + "\"cross_point";
         List<VortexColumnDTO> columnDTOS = new ArrayList<>();
-        columnDTOS.add(new VortexColumnDTO("typeCode", ColumnTypeEnum.String.getKey(), "基础设施类型", null, false));
-        columnDTOS.add(new VortexColumnDTO("typeName", ColumnTypeEnum.String.getKey(), "名称", null, false));
-        columnDTOS.add(new VortexColumnDTO("checked", ColumnTypeEnum.Boolean.getKey(), "是否勾选", null, false));
 
         writeModel(modelName, tableName, columnDTOS, chineseName);
         writeDTO(modelName, columnDTOS);
@@ -174,9 +171,9 @@ public class VortexFileUtil {
                 "    public RestResultDto<" + modelName + "VO> getById(@Parameter(description = \"租户ID\") @RequestHeader String tenantId,\n" +
                 "                                                    @Parameter(description = \"用户ID\") @RequestHeader(required = false) String userId,\n" +
                 "                                                    @ModelAttribute String id) {\n" +
-                "    }\n" +
                 "     Assert.hasText(id, \"id不能为空\");\n" +
                 "        return RestResultDto.newSuccess(service.getById(id));\n" +
+                "    }\n" +
                 " @Operation(summary = \"导出\")\n" +
                 "    @RequestMapping(value = \"export\", method = {RequestMethod.GET, RequestMethod.POST})\n" +
                 "    public void dayExport(@Parameter(description = \"租户ID\") @RequestHeader String tenantId,\n" +

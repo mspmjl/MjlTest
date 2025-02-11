@@ -11,9 +11,9 @@ import java.io.IOException;
  */
 public class CcxFileUtil {
     public static void main(String[] args) throws IOException {
-        String modalName = "CoreReport";
-        String chineseName = "收运核心指标一张表";
-        String tableName = "ljsy_core_report";
+        String modalName = "ToiletWorkUpdateHistory";
+        String chineseName = "管线";
+        String tableName = "zyry_toilet_work_update_history";
         boolean splitTable = false;
         boolean longId = true;
         writeModal(splitTable, longId, modalName, tableName);

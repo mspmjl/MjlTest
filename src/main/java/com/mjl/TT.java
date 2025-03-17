@@ -9,8 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(rollbackFor = Exception.class)
 public class TT {
     public static void main(String[] args) throws Exception {
-        System.out.println(Integer.valueOf("01"));
-
+        System.out.println(Boolean.TRUE.equals(true));
     }
 
 

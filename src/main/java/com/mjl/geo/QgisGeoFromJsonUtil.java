@@ -1,14 +1,13 @@
 package com.mjl.geo;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.mjl.DistanceUtil;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.springframework.util.StringUtils;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,7 +20,7 @@ import java.util.stream.Collectors;
  * @author mjl
  * @date 2025/2/11.
  */
-public class GeoFromJsonUtil {
+public class QgisGeoFromJsonUtil {
     public static void main(String[] args) throws Exception {
         String path = "C:\\Users\\DELL\\Desktop\\清江浦区图层2\\geojson";
         Path directory = Paths.get(path);
@@ -34,32 +33,102 @@ public class GeoFromJsonUtil {
 
         Set<String> set = fileNames.stream().map(s -> s.split("-")[0]).collect(Collectors.toSet());
 
-        for (String fileName : set) {
-            handle(path, fileName, "YS");
+        File txt = new File("C:\\Users\\DELL\\Desktop\\清江浦区图层2\\qjpq_check_line.sql");
+        FileWriter writer = new FileWriter(txt);
+        BufferedWriter bufferedWriter = new BufferedWriter(writer);
+
+//        for (String fileName : set) {
+//            handle(path, fileName, "YS", bufferedWriter);
+//            handle(path, fileName, "WS", bufferedWriter);
+//        }
+
+        handle(path, "新天地花苑", "YS", bufferedWriter);
+        bufferedWriter.flush();
+    }
+
+    /**
+     * 有些线有两个图层
+     *
+     * @param path
+     * @param fileName
+     * @param type
+     * @return
+     */
+    private static List<QgisGeoDTO> getLineList(String path, String fileName, String type) {
+        List<QgisGeoDTO> result = new ArrayList<>();
+        List<QgisGeoDTO> lines1 = readTextFile(path + "\\" + fileName + "-" + type + "LINE.geojson");
+        List<QgisGeoDTO> lines2 = readTextFile(path + "\\" + fileName + "-" + type + "LINE2.geojson");
+        if (CollectionUtil.isNotEmpty(lines1)) {
+            result.addAll(lines1);
+        }
+        if (CollectionUtil.isNotEmpty(lines2)) {
+            result.addAll(lines2);
+        }
+        return result;
+    }
+
+    public static void generateSql(String path, String fileName, String type, BufferedWriter bufferedWriter) throws IOException {
+        List<QgisGeoDTO> lines = getLineList(path, fileName, type);
+        if (CollectionUtil.isEmpty(lines)) {
+            return;
+        }
+        for (QgisGeoDTO line : lines) {
+            QgisGeometry geometry = line.getGeometry();
+            List<List<Double>> lineCoordinates = geometry.getLineCoordinates();
+            if (lineCoordinates == null) {
+                lineCoordinates = JSON.parseObject(geometry.getCoordinates(), new TypeReference<>() {
+                });
+                geometry.setLineCoordinates(lineCoordinates);
+            }
+            if (lineCoordinates.get(0).get(0) > 180 || lineCoordinates.get(1).get(0) > 180) {
+                System.out.println(fileName);
+                return;
+            }
+            String sql = "INSERT INTO qjpq_check_line ( `id`,`name`, `type`,`location`) VALUES ( UUID(),'" + fileName + "', '" + type + "',ST_GeomFromText('LINESTRING(" + lineCoordinates.get(0).get(0) + " " + lineCoordinates.get(0).get(1)
+                    + ", " + lineCoordinates.get(1).get(0) + " " + lineCoordinates.get(1).get(1) + ")'));";
+            bufferedWriter.write(sql);
+            bufferedWriter.newLine();
         }
     }
 
-    public static void handle(String path, String fileName, String type) throws IOException {
-        List<GeoDTO> lines = readTextFile(path + "\\" + fileName + "-" + type + "LINE.geojson");
-        List<GeoDTO> marks = readTextFile(path + "\\" + fileName + "-" + type + "MARK.geojson");
-        List<GeoDTO> texts = readTextFile(path + "\\" + fileName + "-" + type + "TEXT.geojson");
+    public static void handle(String path, String fileName, String type, BufferedWriter bufferedWriter) throws IOException {
+        List<QgisGeoDTO> lines = getLineList(path, fileName, type);
+        if (CollectionUtil.isEmpty(lines)) {
+            return;
+        }
+        List<QgisGeoDTO> marks = readTextFile(path + "\\" + fileName + "-" + type + "MARK.geojson");
+        List<QgisGeoDTO> texts = readTextFile(path + "\\" + fileName + "-" + type + "TEXT.geojson");
 
-        for (GeoDTO line : lines) {
+        for (QgisGeoDTO line : lines) {
             findMark(line, marks);
             findText(line, texts);
+
+            List<List<Double>> lineCoordinates = line.getGeometry().getLineCoordinates();
+
+            String sql = "INSERT INTO qjpq_check_line ( `id`,`name`, `type`,`location`,`text`,`startCode`,`endCode`) VALUES ( UUID(),'" + fileName + "', '" + type + "',ST_GeomFromText('LINESTRING(" + lineCoordinates.get(0).get(0) + " " + lineCoordinates.get(0).get(1)
+                    + ", " + lineCoordinates.get(1).get(0) + " " + lineCoordinates.get(1).get(1) + ")')," + getSqlStr(line.getText()) + "," + getSqlStr(line.getStartCode()) + "," + getSqlStr(line.getEndCode()) + ");";
+            bufferedWriter.write(sql);
+            bufferedWriter.newLine();
         }
     }
 
-    private static void findMark(GeoDTO line, List<GeoDTO> marks) {
-        Geometry geometry = line.getGeometry();
+    private static String getSqlStr(String s) {
+        return s == null ? "null" : "'" + s + "'";
+    }
+
+    private static void findMark(QgisGeoDTO line, List<QgisGeoDTO> marks) {
+        if (CollectionUtil.isEmpty(marks)) {
+            return;
+        }
+        QgisGeometry geometry = line.getGeometry();
         List<List<Double>> lineCoordinates = geometry.getLineCoordinates();
         if (lineCoordinates == null) {
             lineCoordinates = JSON.parseObject(geometry.getCoordinates(), new TypeReference<>() {
             });
             geometry.setLineCoordinates(lineCoordinates);
         }
-        for (GeoDTO geoDTO : marks) {
-            Geometry innerGeometry = geoDTO.getGeometry();
+        for (QgisGeoDTO geoDTO : marks) {
+            QgisGeometry innerGeometry = geoDTO.getGeometry();
             List<Double> pointCoordinates = innerGeometry.getPointCoordinates();
             if (pointCoordinates == null) {
                 pointCoordinates = JSON.parseObject(innerGeometry.getCoordinates(), new TypeReference<>() {
@@ -74,23 +143,27 @@ public class GeoFromJsonUtil {
             double distance = pointToLineSegmentDistance(pointCoordinates.get(0), pointCoordinates.get(1), lineCoordinates.get(0).get(0), lineCoordinates.get(0).get(1), lineCoordinates.get(1).get(0), lineCoordinates.get(1).get(1));
             geoDTO.setDistance(distance);
         }
-        GeoDTO match = marks.stream().filter(inner -> inner.getDistance() > 0.45 && inner.getStartDistance() < 0.55).findFirst().orElse(null);
+        QgisGeoDTO match = marks.stream().filter(inner -> inner.getDistance() > 0.45 && inner.getDistance() < 0.55).findFirst().orElse(null);
         if (match != null) {
             String text = match.getProperties().getText();
-
+            line.setText(text);
         }
     }
 
-    private static void findText(GeoDTO line, List<GeoDTO> texts) {
-        Geometry geometry = line.getGeometry();
+
+    private static void findText(QgisGeoDTO line, List<QgisGeoDTO> texts) {
+        if (CollectionUtil.isEmpty(texts)) {
+            return;
+        }
+        QgisGeometry geometry = line.getGeometry();
         List<List<Double>> lineCoordinates = geometry.getLineCoordinates();
         if (lineCoordinates == null) {
             lineCoordinates = JSON.parseObject(geometry.getCoordinates(), new TypeReference<>() {
             });
             geometry.setLineCoordinates(lineCoordinates);
         }
-        for (GeoDTO geoDTO : texts) {
-            Geometry innerGeometry = geoDTO.getGeometry();
+        for (QgisGeoDTO geoDTO : texts) {
+            QgisGeometry innerGeometry = geoDTO.getGeometry();
             List<Double> pointCoordinates = innerGeometry.getPointCoordinates();
             if (pointCoordinates == null) {
                 pointCoordinates = JSON.parseObject(innerGeometry.getCoordinates(), new TypeReference<>() {
@@ -102,8 +175,8 @@ public class GeoFromJsonUtil {
             geoDTO.setStartDistance(startDistance);
             geoDTO.setEndDistance(endDistance);
         }
-        GeoDTO start = texts.stream().filter(inner -> inner.getStartDistance() > 0.145 && inner.getStartDistance() < 0.155).findFirst().orElse(null);
-        GeoDTO end = texts.stream().filter(inner -> inner.getEndDistance() > 0.145 && inner.getEndDistance() < 0.155).findFirst().orElse(null);
+        QgisGeoDTO start = texts.stream().filter(inner -> (inner.getProperties().getText().startsWith("YS") || inner.getProperties().getText().startsWith("WS")) && inner.getStartDistance() > 0.145 && inner.getStartDistance() < 0.155).findFirst().orElse(null);
+        QgisGeoDTO end = texts.stream().filter(inner -> (inner.getProperties().getText().startsWith("YS") || inner.getProperties().getText().startsWith("WS")) && inner.getEndDistance() > 0.145 && inner.getEndDistance() < 0.155).findFirst().orElse(null);
         if (start != null) {
             line.setStartCode(start.getProperties().getText());
         }
@@ -112,23 +185,24 @@ public class GeoFromJsonUtil {
         }
     }
 
-    private static List<GeoDTO> readTextFile(String filePath) {
+    private static List<QgisGeoDTO> readTextFile(String filePath) {
         StringBuilder content = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(filePath));
             String line;
             // 逐行读取文件内容
             while ((line = reader.readLine()) != null) {
                 content.append(line).append("\n");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
         if (StringUtils.isEmpty(content.toString())) {
             return null;
         }
         String features = JSON.parseObject(content.toString()).getString("features");
 
-        List<GeoDTO> list = JSON.parseObject(features, new TypeReference<>() {
+        List<QgisGeoDTO> list = JSON.parseObject(features, new TypeReference<>() {
         });
 
         return list;

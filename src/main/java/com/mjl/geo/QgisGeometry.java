@@ -6,7 +6,7 @@ import java.util.List;
  * @author mjl
  * @date 2025/2/11.
  */
-public class Geometry {
+public class QgisGeometry {
     private String type;
     private String coordinates;
     private List<Double> pointCoordinates;

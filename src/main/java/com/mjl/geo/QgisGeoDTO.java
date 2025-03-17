@@ -4,15 +4,24 @@ package com.mjl.geo;
  * @author mjl
  * @date 2025/2/11.
  */
-public class GeoDTO {
-    private GeoProperty properties;
-    private Geometry geometry;
+public class QgisGeoDTO {
+    private GgisGeoProperty properties;
+    private QgisGeometry geometry;
     private String name;
     private String startCode;
     private String endCode;
+    private String text;
     private Double distance;
     private Double startDistance;
     private Double endDistance;
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
 
     public Double getStartDistance() {
         return startDistance;
@@ -62,19 +71,19 @@ public class GeoDTO {
         this.endCode = endCode;
     }
 
-    public GeoProperty getProperties() {
+    public GgisGeoProperty getProperties() {
         return properties;
     }
 
-    public void setProperties(GeoProperty properties) {
+    public void setProperties(GgisGeoProperty properties) {
         this.properties = properties;
     }
 
-    public Geometry getGeometry() {
+    public QgisGeometry getGeometry() {
         return geometry;
     }
 
-    public void setGeometry(Geometry geometry) {
+    public void setGeometry(QgisGeometry geometry) {
         this.geometry = geometry;
     }
 }

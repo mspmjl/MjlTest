@@ -25,9 +25,9 @@ import java.util.List;
 public class VortexFileUtil {
     public static void main(String[] args) throws IOException {
 
-        String chineseName = "相交管线检查-管点";
-        String modelName = "CrossPoint";
-        String tableName = "Constants.TABLE_PREFIX + " + "\"cross_point";
+        String chineseName = "调度指令-明细";
+        String modelName = "DispatchRecordDetail";
+        String tableName = "Constants.TABLE_PREFIX + " + "\"dispatch_record_detail";
         List<VortexColumnDTO> columnDTOS = new ArrayList<>();
 
         writeModel(modelName, tableName, columnDTOS, chineseName);
@@ -201,11 +201,11 @@ public class VortexFileUtil {
         bufferedWriter.newLine();
         bufferedWriter.write("import lombok.EqualsAndHashCode;");
         bufferedWriter.newLine();
-        bufferedWriter.write("import org.hibernate.annotations.Table;");
-        bufferedWriter.newLine();
         bufferedWriter.write("import javax.persistence.Column;");
         bufferedWriter.newLine();
         bufferedWriter.write("import javax.persistence.Entity;");
+        bufferedWriter.newLine();
+        bufferedWriter.write("import javax.persistence.Table;");
         bufferedWriter.newLine();
         bufferedWriter.write("@Data");
         bufferedWriter.newLine();
@@ -213,7 +213,7 @@ public class VortexFileUtil {
         bufferedWriter.newLine();
         bufferedWriter.write("@Entity(name = " + modelName + ".TABLE_NAME)");
         bufferedWriter.newLine();
-        bufferedWriter.write("@Table(appliesTo = " + modelName + ".TABLE_NAME, comment = \"" + chineseName + "\")");
+        bufferedWriter.write("@Table(indexes =    {})");
         bufferedWriter.newLine();
         bufferedWriter.write("@TableName(value = " + modelName + ".TABLE_NAME)");
         bufferedWriter.newLine();

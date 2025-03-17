@@ -11,10 +11,10 @@ import java.io.IOException;
  */
 public class CcxFileUtil {
     public static void main(String[] args) throws IOException {
-        String modalName = "ToiletWorkUpdateHistory";
-        String chineseName = "管线";
-        String tableName = "zyry_toilet_work_update_history";
-        boolean splitTable = false;
+        String modalName = "CarWorkDetail";
+        String chineseName = "车辆作业详情明细";
+        String tableName = "crd_car_work_detail";
+        boolean splitTable = true;
         boolean longId = true;
         writeModal(splitTable, longId, modalName, tableName);
         writeDTO(splitTable, longId, modalName);

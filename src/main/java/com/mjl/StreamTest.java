@@ -1,11 +1,14 @@
 package com.mjl;
 
+import com.alibaba.fastjson.JSON;
 import com.mjl.model.Person;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author MJL
@@ -19,7 +22,8 @@ public class StreamTest {
         long count = nullTest.stream().filter(a -> a.getAge() > 10).count();
         System.out.println(count);
 
-
+        Map<String, Person> collect = personList.stream().filter(o -> "123321".equals(o.getName())).collect(Collectors.toMap(Person::getName, Function.identity()));
+        System.out.println(JSON.toJSONString(collect));
         Person person = null;
         int sum = Optional.ofNullable(person).map(Person::getAge).stream().mapToInt(Integer::intValue).sum();
         System.out.println(sum);
@@ -33,13 +37,13 @@ public class StreamTest {
 //        Set<String> collect1 = personList.stream().filter(p -> p.getAge() > 100).map(Person::getName).collect(Collectors.toSet());
 //        Person person = personList.stream().filter(s -> s.getAge() > 100).sorted(Comparator.comparing(Person::getAge)).findFirst().orElse(null);
 //        System.out.println(person);
-        System.out.println(personList.stream().anyMatch(a->"Tom111".equals(a.getName())));
-        personList.addAll(new ArrayList<>());
-        System.out.println(personList);
-        personList.sort(Comparator.comparing(Person::getAge));
-        System.out.println(personList);
-        personList.sort(Comparator.comparing(Person::getAge).reversed());
-        System.out.println(personList);
+//        System.out.println(personList.stream().anyMatch(a->"Tom111".equals(a.getName())));
+//        personList.addAll(new ArrayList<>());
+//        System.out.println(personList);
+//        personList.sort(Comparator.comparing(Person::getAge));
+//        System.out.println(personList);
+//        personList.sort(Comparator.comparing(Person::getAge).reversed());
+//        System.out.println(personList);
 //        personList.sort((o1, o2) -> o2.getAge() - o1.getAge());
 
 //        personList.forEach(person -> System.out.println(person));

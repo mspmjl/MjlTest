@@ -11,10 +11,10 @@ import java.io.IOException;
  */
 public class CcxFileUtil {
     public static void main(String[] args) throws IOException {
-        String modalName = "CarWorkDetail";
-        String chineseName = "车辆作业详情明细";
-        String tableName = "crd_car_work_detail";
-        boolean splitTable = true;
+        String modalName = "AlarmRerunReport";
+        String chineseName = "违规审批重跑报表";
+        String tableName = "alarm_rerun_report";
+        boolean splitTable = false;
         boolean longId = true;
         writeModal(splitTable, longId, modalName, tableName);
         writeDTO(splitTable, longId, modalName);
@@ -22,9 +22,9 @@ public class CcxFileUtil {
         writeService(splitTable, longId, modalName);
         writeServiceImpl(splitTable, longId, modalName);
         writeCriteria(modalName, longId);
-
         writeController(modalName, chineseName);
     }
+
 
     public static void writeController(String modalName, String chineseName) throws IOException {
 
@@ -50,7 +50,7 @@ public class CcxFileUtil {
 
         bufferedWriter.write("@Api(value = \"" + chineseName + "\", tags = \"" + chineseName + "\")\n" +
                 "@CcxRestController(value = Constants.WEB_URL_PRE + \"/" + tag + "\")\n" +
-                "public class " + modalName + "Controller {\n" +
+                "public class " + modalName + "Controller  extends BaseApiController {\n" +
                 "\n" +
                 "    @Resource\n" +
                 "    private I" + modalName + "Service service;\n" +
@@ -60,6 +60,7 @@ public class CcxFileUtil {
                 "    @ApiOperation(\"分页查询\")\n" +
                 "    @RequestMapping(\"page\")\n" +
                 "    public RestResultDto<DataStore<" + modalName + "DTO>> page(@RequestBody " + modalName + "Criteria criteria) {\n" +
+                " buildCriteria(criteria);\n" +
                 "        return RestResultDto.newSuccess(service.page(criteria));\n" +
                 "    }\n" +
                 "\n" +
@@ -71,12 +72,14 @@ public class CcxFileUtil {
                 "    @ApiOperation(\"新增\")\n" +
                 "    @RequestMapping(\"insert\")\n" +
                 "    public RestResultDto create(@RequestBody @Valid " + modalName + "DTO dto) {\n" +
+                " assignBaseUserInfo(dto);\n" +
                 "        service.insert(dto);\n" +
                 "        return RestResultDto.newSuccess();\n" +
                 "    }\n" +
                 "\n" + "    @ApiOperation(\"修改\")\n" +
                 "    @RequestMapping(\"update\")\n" +
                 "    public RestResultDto update(@RequestBody @Valid " + modalName + "DTO dto) {\n" +
+                " assignBaseUserInfo(dto);\n" +
                 "        service.update(dto);\n" +
                 "        return RestResultDto.newSuccess();\n" +
                 "    }\n" +
@@ -135,6 +138,10 @@ public class CcxFileUtil {
         BufferedWriter bufferedWriter = new BufferedWriter(writer);
         bufferedWriter.write("import javax.persistence.Table;");
         bufferedWriter.newLine();
+        if (longId && splitTable) {
+            bufferedWriter.write("import javax.persistence.Id;");
+            bufferedWriter.newLine();
+        }
         bufferedWriter.write("@NameStyle(Style.normal)");
         bufferedWriter.newLine();
         bufferedWriter.write("@Table(name =" + modalName + ".TABLE_NAME,indexes = {})");
@@ -150,6 +157,12 @@ public class CcxFileUtil {
         bufferedWriter.write("public class  " + modalName + "  extends " + ext + " {");
         bufferedWriter.newLine();
         bufferedWriter.write("    public static final String TABLE_NAME = Constants.TABLE_PRE + \"" + tableName + "\";\n");
+        if (longId && splitTable) {
+            bufferedWriter.write("    @Id\n" +
+                    "    @GeneratedValue(strategy = GenerationType.IDENTITY)\n" +
+                    "    private Long id;");
+            bufferedWriter.newLine();
+        }
         bufferedWriter.write("}");
         bufferedWriter.flush();
     }

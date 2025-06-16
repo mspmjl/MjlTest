@@ -25,10 +25,52 @@ import java.util.List;
 public class VortexFileUtil {
     public static void main(String[] args) throws IOException {
 
-        String chineseName = "调度指令-明细";
-        String modelName = "DispatchRecordDetail";
-        String tableName = "Constants.TABLE_PREFIX + " + "\"dispatch_record_detail";
+
+        String chineseName = "会议管理";
+        String modelName = "MeetingManage";
+        String tableName = "Constants.TABLE_PREFIX + " + "\"meeting_manage";
         List<VortexColumnDTO> columnDTOS = new ArrayList<>();
+        columnDTOS.add(new VortexColumnDTO("waterUtilityId", ColumnTypeEnum.String.getKey(), "公司id(水司)", null, true));
+        columnDTOS.add(new VortexColumnDTO("waterUtilityName", ColumnTypeEnum.String.getKey(), "公司(水司)", null, true));
+        columnDTOS.add(new VortexColumnDTO("waterPlantId", ColumnTypeEnum.String.getKey(), "关联水厂id", null, false));
+        columnDTOS.add(new VortexColumnDTO("waterPlantName", ColumnTypeEnum.String.getKey(), "关联水厂", null, false));
+        columnDTOS.add(new VortexColumnDTO("name", ColumnTypeEnum.String.getKey(), "会议名称", 30, true));
+        columnDTOS.add(new VortexColumnDTO("time", ColumnTypeEnum.Date.getKey(), "时间", null, true));
+        columnDTOS.add(new VortexColumnDTO("host", ColumnTypeEnum.String.getKey(), "主持人", 20, true));
+        columnDTOS.add(new VortexColumnDTO("location", ColumnTypeEnum.String.getKey(), "会议地点", 30, true));
+        columnDTOS.add(new VortexColumnDTO("content", ColumnTypeEnum.String.getKey(), "会议内容", 500, true));
+        columnDTOS.add(new VortexColumnDTO("photo", ColumnTypeEnum.String.getKey(), "图片", 2500, false));
+        columnDTOS.add(new VortexColumnDTO("file", ColumnTypeEnum.String.getKey(), "附件", 2500, true));
+        columnDTOS.add(new VortexColumnDTO("remarks", ColumnTypeEnum.String.getKey(), "备注", 500, false));
+
+
+//        String chineseName = "排污许可证管理";
+//        String modelName = "PollutantDischargePermit";
+//        String tableName = "Constants.TABLE_PREFIX + " + "\"pollutant_discharge_permit";
+//        List<VortexColumnDTO> columnDTOS = new ArrayList<>();
+//        columnDTOS.add(new VortexColumnDTO("waterUtilityId", ColumnTypeEnum.String.getKey(), "公司id(水司)", null, true));
+//        columnDTOS.add(new VortexColumnDTO("waterUtilityName", ColumnTypeEnum.String.getKey(), "公司(水司)", null, true));
+//        columnDTOS.add(new VortexColumnDTO("code", ColumnTypeEnum.String.getKey(), "许可证编号", 30, true));
+//        columnDTOS.add(new VortexColumnDTO("controlType", ColumnTypeEnum.String.getKey(), "管控类型", 30, true));
+//        columnDTOS.add(new VortexColumnDTO("EffectiveDateStart", ColumnTypeEnum.LocalDate.getKey(), "有效期限开始", null, true));
+//        columnDTOS.add(new VortexColumnDTO("EffectiveDateEnd", ColumnTypeEnum.LocalDate.getKey(), "有效期限结束", null, true));
+//        columnDTOS.add(new VortexColumnDTO("alarmDate", ColumnTypeEnum.LocalDate.getKey(), "预警日期", null, true));
+//        columnDTOS.add(new VortexColumnDTO("statusCode", ColumnTypeEnum.String.getKey(), "状态 枚举PollutantDischargePermitStatusEnum", null, false));
+//        columnDTOS.add(new VortexColumnDTO("file", ColumnTypeEnum.String.getKey(), "附件", 2500, false));
+//        String chineseName = "项目运营合同管理";
+//        String modelName = "ProjectOperationContract";
+//        String tableName = "Constants.TABLE_PREFIX + " + "\"project_operation_contract";
+//        List<VortexColumnDTO> columnDTOS = new ArrayList<>();
+//        columnDTOS.add(new VortexColumnDTO("waterUtilityId", ColumnTypeEnum.String.getKey(), "项目公司id(水司)", null, true));
+//        columnDTOS.add(new VortexColumnDTO("waterUtilityName", ColumnTypeEnum.String.getKey(), "项目公司(水司)", null, true));
+//        columnDTOS.add(new VortexColumnDTO("partyA", ColumnTypeEnum.String.getKey(), "甲方", 30, true));
+//        columnDTOS.add(new VortexColumnDTO("name", ColumnTypeEnum.String.getKey(), "合同名称", 30, true));
+//        columnDTOS.add(new VortexColumnDTO("signingDate", ColumnTypeEnum.LocalDate.getKey(), "签订时间", null, true));
+//        columnDTOS.add(new VortexColumnDTO("operationPeriod", ColumnTypeEnum.Integer.getKey(), "运营期限", null, true));
+//        columnDTOS.add(new VortexColumnDTO("expirationDate", ColumnTypeEnum.LocalDate.getKey(), "到期时间", null, true));
+//        columnDTOS.add(new VortexColumnDTO("statusCode", ColumnTypeEnum.String.getKey(), "合同状态编号 枚举ProjectOperationContractEnum", null, false));
+//        columnDTOS.add(new VortexColumnDTO("file", ColumnTypeEnum.String.getKey(), "附件", 2500, false));
+
 
         writeModel(modelName, tableName, columnDTOS, chineseName);
         writeDTO(modelName, columnDTOS);
@@ -40,6 +82,57 @@ public class VortexFileUtil {
         writeController(modelName, chineseName);
     }
 
+    public static void writeImort(String modelName, String tableName, List<VortexColumnDTO> columnDTOS, String chineseName) throws IOException {
+        File txt = new File("C:\\Users\\DELL\\Desktop\\vortexdto\\" + modelName + ".java");
+        FileWriter writer = new FileWriter(txt);
+        BufferedWriter bufferedWriter = new BufferedWriter(writer);
+        bufferedWriter.write("import com.baomidou.mybatisplus.annotation.TableName;");
+        bufferedWriter.newLine();
+        bufferedWriter.write("import com.vortex.cloud.vfs.lite.data.domain.AbstractBaseDeleteModel;");
+        bufferedWriter.newLine();
+        bufferedWriter.write("import lombok.Data;");
+        bufferedWriter.newLine();
+        bufferedWriter.write("@Data");
+        bufferedWriter.newLine();
+        bufferedWriter.write("public class  " + modelName + "ImportDTO  extends AbstractTemplateDTO {");
+        bufferedWriter.newLine();
+        for (VortexColumnDTO columnDTO : columnDTOS) {
+            String importCheck = "@ImportCheck(";
+            String type = columnDTO.getType();
+            if (ColumnTypeEnum.Double.getKey().equals(type)) {
+                importCheck += "isDouble";
+            } else if (ColumnTypeEnum.String.getKey().equals(type)) {
+                importCheck += "isString";
+            } else if (ColumnTypeEnum.LocalDate.getKey().equals(type)) {
+                importCheck += "isLocalDate";
+            } else if (ColumnTypeEnum.Date.getKey().equals(type)) {
+                importCheck += "isDate";
+            } else if (ColumnTypeEnum.Integer.getKey().equals(type)) {
+                importCheck += "isInteger";
+            } else if (ColumnTypeEnum.Long.getKey().equals(type)) {
+                importCheck += "isLong";
+            } else if (ColumnTypeEnum.BigDecimal.getKey().equals(type)) {
+                importCheck += "isBigDecimal";
+            }
+            importCheck += "= true,";
+            if (Boolean.TRUE.equals(columnDTO.getNotNull())) {
+                importCheck += " notNull = true,";
+            }
+            if (ColumnTypeEnum.String.getKey().equals(type)) {
+                Integer length = columnDTO.getLength() == null ? 50 : columnDTO.getLength();
+                importCheck += " length = " + length + ",";
+            }
+            importCheck += "msg = \"" + columnDTO.getComment() + "\"";
+            importCheck += ")";
+            bufferedWriter.write(importCheck);
+            bufferedWriter.newLine();
+            bufferedWriter.write(" private String " + columnDTO.getName() + ";");
+
+        }
+        bufferedWriter.write("}");
+        bufferedWriter.flush();
+    }
+
     private static void writeColumnInfo(VortexColumnDTO dto, BufferedWriter bufferedWriter, boolean writeDb, boolean valid) throws IOException {
         if (writeDb) {
             String type = dto.getType();
@@ -48,7 +141,7 @@ public class VortexFileUtil {
                 dbColumn = "double";
             } else if (ColumnTypeEnum.String.getKey().equals(type)) {
                 Integer length = dto.getLength() == null ? 50 : dto.getLength();
-                dbColumn = "varchar(" + length + ")";
+                dbColumn = "varchar(" + length + ") default ''";
             } else if (ColumnTypeEnum.LocalDate.getKey().equals(type)) {
                 dbColumn = "date";
             } else if (ColumnTypeEnum.Date.getKey().equals(type)) {
@@ -63,6 +156,9 @@ public class VortexFileUtil {
                 dbColumn = "bit(1)";
             }
             bufferedWriter.write(" @Column(columnDefinition = \"" + dbColumn + " comment '" + dto.getComment() + "'\")");
+            if (Boolean.FALSE.equals(dto.getNotNull())) {
+                bufferedWriter.write("  @TableField(updateStrategy = FieldStrategy.IGNORED)");
+            }
             bufferedWriter.newLine();
         }
         if (valid && Boolean.TRUE.equals(dto.getNotNull())) {
@@ -78,6 +174,7 @@ public class VortexFileUtil {
             bufferedWriter.newLine();
         }
         bufferedWriter.write(" @Schema(description = \"" + dto.getComment() + "\")");
+
         bufferedWriter.newLine();
         bufferedWriter.write(" private " + dto.getType() + " " + dto.getName() + ";");
         bufferedWriter.newLine();
@@ -170,7 +267,7 @@ public class VortexFileUtil {
                 "    @RequestMapping(value = \"/getById\", method = {RequestMethod.GET, RequestMethod.POST})\n" +
                 "    public RestResultDto<" + modelName + "VO> getById(@Parameter(description = \"租户ID\") @RequestHeader String tenantId,\n" +
                 "                                                    @Parameter(description = \"用户ID\") @RequestHeader(required = false) String userId,\n" +
-                "                                                    @ModelAttribute String id) {\n" +
+                "                                                    @RequestParam String id) {\n" +
                 "     Assert.hasText(id, \"id不能为空\");\n" +
                 "        return RestResultDto.newSuccess(service.getById(id));\n" +
                 "    }\n" +
@@ -205,7 +302,7 @@ public class VortexFileUtil {
         bufferedWriter.newLine();
         bufferedWriter.write("import javax.persistence.Entity;");
         bufferedWriter.newLine();
-        bufferedWriter.write("import javax.persistence.Table;");
+        bufferedWriter.write("import org.hibernate.annotations.Table;;");
         bufferedWriter.newLine();
         bufferedWriter.write("@Data");
         bufferedWriter.newLine();
@@ -213,7 +310,7 @@ public class VortexFileUtil {
         bufferedWriter.newLine();
         bufferedWriter.write("@Entity(name = " + modelName + ".TABLE_NAME)");
         bufferedWriter.newLine();
-        bufferedWriter.write("@Table(indexes =    {})");
+        bufferedWriter.write("@Table(appliesTo = " + modelName + ".TABLE_NAME,comment = \"" + chineseName + "\",indexes =    {})");
         bufferedWriter.newLine();
         bufferedWriter.write("@TableName(value = " + modelName + ".TABLE_NAME)");
         bufferedWriter.newLine();
@@ -398,27 +495,16 @@ public class VortexFileUtil {
                         "    @Override\n" +
                         "    public DataStoreDTO<" + modelName + "VO> page(" + modelName + "SearchDTO searchDTO) {\n" +
                         "        LambdaQueryChainWrapper<" + modelName + "> queryWrapper = buildQuery(searchDTO);\n" +
-                        "        Pageable pageable = PageUtil.getPageable(searchDTO);\n" +
-                        "        Page<" + modelName + "> page = PageUtils.transferPage(pageable);\n" +
+                        "        Page<" + modelName + "> page = PageUtil.transferPage(searchDTO);\n" +
                         "        Page<" + modelName + "> pageContent = queryWrapper.page(page);\n" +
                         "        return new DataStoreDTO<>(pageContent.getTotal(), transVos(pageContent.getRecords()));\n" +
                         "    }\n" +
                         "\n" +
-                        "    @Override\n" +
+                        "        @Override\n" +
                         "    public List<" + modelName + "VO> listDto(" + modelName + "SearchDTO searchDTO) {\n" +
                         "        LambdaQueryChainWrapper<" + modelName + "> queryWrapper = buildQuery(searchDTO);\n" +
-                        "        Sort sort = PageUtil.getSort(searchDTO);\n" +
-                        "        if (!sort.isUnsorted()) {\n" +
-                        "            Iterator var8 = sort.iterator();\n" +
-                        "            while (var8.hasNext()) {\n" +
-                        "                Sort.Order order = (Sort.Order) var8.next();\n" +
-                        "                String property = order.getProperty();\n" +
-                        "                boolean ascending = order.isAscending();\n" +
-                        "                queryWrapper.orderBy(true, ascending, ToSFunctionUtil.getSFunction(" + modelName + ".class, property));\n" +
-                        "            }\n" +
-                        "        }\n" +
+                        "        PageUtil.formatListSort(queryWrapper, searchDTO, " + modelName + ".class);\n" +
                         "        List<" + modelName + "> list = queryWrapper.list();\n" +
-                        "\n" +
                         "        return transVos(list);\n" +
                         "    }\n" +
                         "\n" +
@@ -446,22 +532,26 @@ public class VortexFileUtil {
                         "        if (CollectionUtils.isNotEmpty(idList)) {\n" +
                         "            super.removeByIds(idList);\n" +
                         "        }\n" +
-                        "\n" +
                         "    }\n" +
                         "    @Override\n" +
                         "    public " + modelName + "VO getById(String id) {\n" +
                         "        " + modelName + "SearchDTO searchDTO = new " + modelName + "SearchDTO();\n" +
                         "        searchDTO.setId(id);\n" +
-                        "        List<" + modelName + "VO> " + modelName + "VOS = listDto(searchDTO);\n" +
-                        "        Assert.notEmpty(" + modelName + "VOS, \"根据id未找到数据\");\n" +
-                        "        return " + modelName + "VOS.get(0);\n" +
+                        "        List<" + modelName + "VO> " + lowerCaseFirstLetter(modelName) + "VOS = listDto(searchDTO);\n" +
+                        "        Assert.notEmpty(" + lowerCaseFirstLetter(modelName) + "VOS, \"根据id未找到数据\");\n" +
+                        "        return " + lowerCaseFirstLetter(modelName) + "VOS.get(0);\n" +
                         "    }\n");
-        bufferedWriter.newLine();
 
 
-        bufferedWriter.newLine();
         bufferedWriter.write("}");
         bufferedWriter.flush();
+    }
+
+    public static String lowerCaseFirstLetter(String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+        return Character.toLowerCase(str.charAt(0)) + str.substring(1);
     }
 
     public static void writeCriteria(String modelName) throws IOException {

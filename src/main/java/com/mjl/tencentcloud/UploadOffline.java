@@ -1,22 +1,19 @@
 package com.mjl.tencentcloud;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.qcloud.cos.COSClient;
-import com.qcloud.cos.ClientConfig;
-import com.qcloud.cos.auth.BasicSessionCredentials;
-import com.qcloud.cos.model.PutObjectRequest;
-import com.qcloud.cos.model.PutObjectResult;
-import com.qcloud.cos.region.Region;
-import com.tencentcloudapi.common.CommonClient;
+import com.alibaba.fastjson.JSON;
 import com.tencentcloudapi.common.Credential;
 import com.tencentcloudapi.common.exception.TencentCloudSDKException;
 import com.tencentcloudapi.common.profile.ClientProfile;
 import com.tencentcloudapi.common.profile.HttpProfile;
+import com.tencentcloudapi.lke.v20231130.LkeClient;
+import com.tencentcloudapi.lke.v20231130.models.CreateReleaseRequest;
+import com.tencentcloudapi.lke.v20231130.models.CreateReleaseResponse;
+import com.tencentcloudapi.lke.v20231130.models.DeleteDocRequest;
+import com.tencentcloudapi.lke.v20231130.models.DeleteDocResponse;
+import org.springframework.util.CollectionUtils;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 
 public class UploadOffline {
     private static final String EndPoint = "lke.tencentcloudapi.com";
@@ -27,117 +24,50 @@ public class UploadOffline {
     private static final String Region = "ap-guangzhou";
 
     public static void main(String[] args) throws TencentCloudSDKException {
+//        release();
+        // 1904008028758656384 1904010445176418112 1904010522074293568
+        delete(Arrays.asList("1904008028758656384", "1904010445176418112", "1904010522074293568"));
+    }
 
-        // 定义文件路径
-        String filePath = "H:\\20241212测试.xlsx";
-
-        // 使用Paths类来获取Path对象
-        Path path = Paths.get(filePath);
-
-        // 获取文件名
-        Path fileName = path.getFileName();
-
-        // 获取文件扩展名
-        String fileExt = "";
-        if (fileName != null) {
-            String fullName = fileName.toString();
-            int dotIndex = fullName.lastIndexOf('.');
-            if (dotIndex != -1 && dotIndex < fullName.length() - 1) {
-                fileExt = fullName.substring(dotIndex + 1);
-            }
-        }
-
-        // 打印文件路径、文件名和文件扩展名
-        System.out.println("filePath: " + filePath);
-        System.out.println("fileName: " + fileName);
-        System.out.println("fileExt: " + fileExt);
-
-        //   1. 获取临时密钥
+    public static void release() throws TencentCloudSDKException {
         Credential cred = new Credential(SecretID, SecretKey);
-
+        // 实例化一个http选项，可选的，没有特殊需求可以跳过
         HttpProfile httpProfile = new HttpProfile();
         httpProfile.setEndpoint(EndPoint);
-
+        // 实例化一个client选项，可选的，没有特殊需求可以跳过
         ClientProfile clientProfile = new ClientProfile();
         clientProfile.setHttpProfile(httpProfile);
+        // 实例化要请求产品的client对象,clientProfile是可选的
+        LkeClient client = new LkeClient(cred, Region, clientProfile);
+        // 实例化一个请求对象,每个接口都会对应一个request对象
+        CreateReleaseRequest req = new CreateReleaseRequest();
+        req.setBotBizId(BotBizID);
+        // 返回的resp是一个CreateReleaseResponse的实例，与请求对象对应
+        CreateReleaseResponse resp = client.CreateRelease(req);
+        // 输出json格式的字符串回包
+        System.out.println(JSON.toJSONString(resp));
+    }
 
-        CommonClient client = new CommonClient("lke", "2023-11-30", cred, Region, clientProfile);
-
-        // 请注意，此处为离线文档上传，TypeKey取值为offline; 如果需要复用此处代码上传实时文档，需要修改TypeKey取值为 realtime
-        String params = String.format("{\"BotBizId\":\"%s\",\"FileType\":\"%s\",\"TypeKey\":\"%s\"}", BotBizID, fileExt, TypeKeyOffline);
-
-        String resp = client.call("DescribeStorageCredential", params);
-
-        System.out.println("resp:"+resp);
-        // 使用Gson库解析JSON响应
-        JsonParser parser = new JsonParser();
-        JsonObject jsonObject = parser.parse(resp).getAsJsonObject();
-
-        // 获取Response中的Credentials
-        String tmpSecretId = jsonObject.get("Response").getAsJsonObject().get("Credentials").getAsJsonObject().get("TmpSecretId").getAsString();
-        String tmpSecretKey = jsonObject.get("Response").getAsJsonObject().get("Credentials").getAsJsonObject().get("TmpSecretKey").getAsString();
-        String tmpToken = jsonObject.get("Response").getAsJsonObject().get("Credentials").getAsJsonObject().get("Token").getAsString();
-        String uploadPath = jsonObject.get("Response").getAsJsonObject().get("UploadPath").getAsString();
-        String bucket = jsonObject.get("Response").getAsJsonObject().get("Bucket").getAsString();
-        String regionInfo = jsonObject.get("Response").getAsJsonObject().get("Region").getAsString();
-
-        System.out.printf("tmpSecretId:%s\n", tmpSecretId);
-        System.out.printf("tmpSecretKey:%s\n", tmpSecretKey);
-        System.out.printf("tmpToken:%s\n", tmpToken);
-        System.out.printf("uploadPath:%s\n", uploadPath);
-        System.out.printf("bucket:%s\n", bucket);
-        System.out.printf("region:%s\n", regionInfo);
-
-
-        // 2.将文件上传到cos
-        BasicSessionCredentials cosCred = new BasicSessionCredentials(tmpSecretId, tmpSecretKey, tmpToken);
-        // region
-        Region region = new Region(regionInfo);
-        ClientConfig clientConfig = new ClientConfig(region);
-        COSClient cosClient = new COSClient(cosCred, clientConfig);
-
-
-        // 指定要上传的文件
-        File localFile = new File(filePath);
-        PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, uploadPath, localFile);
-        PutObjectResult putObjectResult = cosClient.putObject(putObjectRequest);
-        System.out.println(putObjectResult);
-        String eTag = putObjectResult.getETag();
-        String cosHash = putObjectResult.getCrc64Ecma();
-        Long fileSize = localFile.length();
-
-
-
-        // 3.调用SaveDoc,将相关元数据存储到知识引擎
-        String saveDocReq = String.format(
-                "{" +
-                        "\"BotBizId\": \"%s\"," +
-                        "\"FileName\": \"%s\"," +
-                        "\"FileType\": \"%s\"," +
-                        "\"CosUrl\": \"%s\"," +
-                        "\"ETag\": \"%s\"," +
-                        "\"CosHash\": \"%s\"," +
-                        "\"Size\": \"%d\"," +
-                        "\"AttrRange\": 1," +
-                        "\"Source\": 0," +
-                        "\"WebUrl\": \"\"," +
-                        "\"AttrLabels\": []," +
-                        "\"IsRefer\": true," +
-                        "\"ReferUrlType\": 0," +
-                        "\"ExpireStart\": \"%d\"," +
-                        "\"Opt\": 2" +
-                        "}",
-                BotBizID, fileName, fileExt, uploadPath, eTag, cosHash, fileSize, System.currentTimeMillis() / 1000
-        );
-
-        System.out.println("saveDocReq:" + saveDocReq);
-        System.out.println("eTag:" + eTag);
-        System.out.println("cosHash:" + cosHash);
-        System.out.println("fileSize:" + fileSize);
-
-        String saveDocRsp = client.call("SaveDoc", saveDocReq);
-
-        // {"Response":{"RequestId":"d7255961-bf8d-4f54-823e-4516a95ccb17","DocBizId":"1866792510909170688","ErrorLink":"","ErrorLinkText":"","ErrorMsg":""}}
-        System.out.println(saveDocRsp);
+    public static void delete(List<String> ids) throws TencentCloudSDKException {
+        if (CollectionUtils.isEmpty(ids)) {
+            return;
+        }
+        Credential cred = new Credential(SecretID, SecretKey);
+        // 实例化一个http选项，可选的，没有特殊需求可以跳过
+        HttpProfile httpProfile = new HttpProfile();
+        httpProfile.setEndpoint(EndPoint);
+        // 实例化一个client选项，可选的，没有特殊需求可以跳过
+        ClientProfile clientProfile = new ClientProfile();
+        clientProfile.setHttpProfile(httpProfile);
+        // 实例化要请求产品的client对象,clientProfile是可选的
+        LkeClient client = new LkeClient(cred, Region, clientProfile);
+        // 实例化一个请求对象,每个接口都会对应一个request对象
+        DeleteDocRequest req = new DeleteDocRequest();
+        req.setBotBizId(BotBizID);
+        req.setDocBizIds(ids.toArray(new String[ids.size()]));
+        // 返回的resp是一个DeleteDocResponse的实例，与请求对象对应
+        DeleteDocResponse resp = client.DeleteDoc(req);
+        // 输出json格式的字符串回包
+        System.out.println(JSON.toJSONString(resp));
     }
 }

@@ -10,10 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(rollbackFor = Exception.class)
 public class TT {
     public static void main(String[] args) throws Exception {
-        System.out.println(CalUtil.round(1 + Math.random() * 10, 2));
-
+        for (int i = 0; i <32 ; i++) {
+            System.out.println("update hcsw_zhsw_line.zhsw_health_score_line_record_"+i+" record,zhsw_line line set record.line_code = line.code where line.deleted = 0 and record.deleted = 0 and record.line_id = line.id;");
+        }
     }
 
+
+//2|397941.76596182695|3931137.8856470115
 //2|397941.76596182695|3931137.8856470115
 //3|395394.95124628046|3933570.0351037313
 //4|395670.9045302642|3931228.656110131

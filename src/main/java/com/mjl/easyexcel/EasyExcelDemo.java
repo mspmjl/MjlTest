@@ -14,6 +14,7 @@ import java.util.List;
 /**
  * @author mjl
  * @date 2025/9/19.
+ * https://swsyb.cloudhw.cn:8446/cloud/device/realtime/monitor/data/realtimeFactorValueList?collectFrequency=realtime
  */
 public class EasyExcelDemo {
     public static void main(String[] args) throws IOException {

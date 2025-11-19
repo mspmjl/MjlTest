@@ -43,21 +43,27 @@ public class VortexFileUtil {
     public static void main(String[] args) throws IOException {
 
 
-        String chineseName = "资源申请与审批";
-        String modelName = "ResourceApplication";
-        String tableName = "Constants.TABLE_PREFIX + " + "\"dispatch_model_config";
+        String chineseName = "危化品出入库登记台账";
+        String modelName = "WhpInOutReport";
+        String tableName = "Constants.TABLE_PREFIX + " + "\"whp_in_out_report";
         List<VortexColumnDTO> columnDTOS = new ArrayList<>();
 
 
-        columnDTOS.add(new VortexColumnDTO("typeCode", ColumnTypeEnum.Integer.getKey(), "类型code 枚举ResourceApplicationTypeEnum", null, true));
-        columnDTOS.add(new VortexColumnDTO("name", ColumnTypeEnum.String.getKey(), "图层台账", null, true));
-        columnDTOS.add(new VortexColumnDTO("applyManId", ColumnTypeEnum.String.getKey(), "申请人id", null, false));
-        columnDTOS.add(new VortexColumnDTO("applyMan", ColumnTypeEnum.String.getKey(), "申请人", null, false));
-        columnDTOS.add(new VortexColumnDTO("applyDeptName", ColumnTypeEnum.String.getKey(), "申请部门", null, true));
-        columnDTOS.add(new VortexColumnDTO("phone", ColumnTypeEnum.String.getKey(), "联系方式", null, true));
-        columnDTOS.add(new VortexColumnDTO("email", ColumnTypeEnum.String.getKey(), "邮箱", null, true));
-        columnDTOS.add(new VortexColumnDTO("purpose", ColumnTypeEnum.String.getKey(), "用途", null, true));
-        columnDTOS.add(new VortexColumnDTO("statusCode", ColumnTypeEnum.Integer.getKey(), "状态code 枚举ResourceApplicationStatusEnum", null, true));
+        columnDTOS.add(new VortexColumnDTO("waterPlantId", ColumnTypeEnum.String.getKey(), "水厂id", null, true));
+        columnDTOS.add(new VortexColumnDTO("waterPlantName", ColumnTypeEnum.String.getKey(), "水厂名称", null, true));
+        columnDTOS.add(new VortexColumnDTO("materialGoodsId", ColumnTypeEnum.Long.getKey(), "危化品物资id", null, true));
+        columnDTOS.add(new VortexColumnDTO("name", ColumnTypeEnum.String.getKey(), "危化品名称", null, true));
+        columnDTOS.add(new VortexColumnDTO("date", ColumnTypeEnum.LocalDate.getKey(), "日期", null, true));
+        columnDTOS.add(new VortexColumnDTO("inNum", ColumnTypeEnum.Integer.getKey(), "入库数量", null, true));
+        columnDTOS.add(new VortexColumnDTO("inUnit", ColumnTypeEnum.String.getKey(), "入库单位", null, true));
+        columnDTOS.add(new VortexColumnDTO("inReceiver", ColumnTypeEnum.String.getKey(), "入库验收人", null, true));
+        columnDTOS.add(new VortexColumnDTO("inReviewer", ColumnTypeEnum.String.getKey(), "入库审核人", null, true));
+        columnDTOS.add(new VortexColumnDTO("outNum", ColumnTypeEnum.Integer.getKey(), "出库申请用量", null, true));
+        columnDTOS.add(new VortexColumnDTO("outUnit", ColumnTypeEnum.String.getKey(), "出库单位", null, true));
+        columnDTOS.add(new VortexColumnDTO("outUse", ColumnTypeEnum.String.getKey(), "出库申请用途", null, true));
+        columnDTOS.add(new VortexColumnDTO("outApplicant", ColumnTypeEnum.String.getKey(), "出库申请人", null, true));
+        columnDTOS.add(new VortexColumnDTO("outReviewer", ColumnTypeEnum.String.getKey(), "出库审核人", null, true));
+        columnDTOS.add(new VortexColumnDTO("outApprover", ColumnTypeEnum.String.getKey(), "出库批准人", null, true));
 
 
         writeModel(modelName, tableName, columnDTOS, chineseName);

@@ -1,5 +1,6 @@
 package com.mjl.util;
 
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -93,10 +94,10 @@ public class ExcelUtil<T> {
                         if (cell == null) {
                             continue;
                         }
-                        int cellType = cell.getCellType();
+                        CellType cellType = cell.getCellType();
                         String c = "";
-                        if (cellType != XSSFCell.CELL_TYPE_STRING) {
-                            cell.setCellType(XSSFCell.CELL_TYPE_STRING);
+                        if (cellType != CellType.STRING) {
+                            cell.setCellType(CellType.STRING);
                         }
                         c = cell.getStringCellValue();
                         if (c == null || c.equals("")) {
